@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Raziul\Sslcommerz\Data;
 
 class RefundResponse

@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Raziul\Sslcommerz\Exceptions;
 
-class SslcommerzException extends \Exception {}
+use Exception;
+
+class SslcommerzException extends Exception {}

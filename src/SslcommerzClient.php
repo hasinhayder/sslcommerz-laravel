@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Raziul\Sslcommerz;
 
 use Illuminate\Http\Client\PendingRequest;
@@ -34,10 +36,10 @@ class SslcommerzClient
      * Create a new instance of Sslcommerz.
      */
     public function __construct(
-        protected string $storeId,
-        protected string $storePassword,
-        protected string $currency,
-        protected bool $sandbox,
+        public readonly string $storeId,
+        public readonly string $storePassword,
+        public readonly string $currency,
+        public readonly bool $sandbox,
     ) {
         $this->data = [
             'store_id' => $storeId,
@@ -96,7 +98,7 @@ class SslcommerzClient
      * Set the order details for the payment.
      */
     public function setOrder(
-        int|float $amount,
+        int | float $amount,
         string $invoiceId,
         string $productName,
         string $productCategory = ' ',
@@ -182,7 +184,7 @@ class SslcommerzClient
     /**
      * Validate a payment through SSLCommerz validator.
      */
-    public function validatePayment(array $payload, string $transactionId, int|float $amount, string $currency = 'BDT')
+    public function validatePayment(array $payload, string $transactionId, int | float $amount, string $currency = 'BDT')
     {
         if (empty($payload['val_id'])) {
             return false;
@@ -245,7 +247,7 @@ class SslcommerzClient
     /**
      * Refund a payment through SSLCommerz.
      */
-    public function refundPayment(string $bankTransactionId, int|float $amount, string $reason): RefundResponse
+    public function refundPayment(string $bankTransactionId, int | float $amount, string $reason): RefundResponse
     {
         $response = $this->client()->get('/validator/api/merchantTransIDvalidationAPI.php', [
             'store_id' => $this->storeId,
@@ -289,8 +291,8 @@ class SslcommerzClient
         return Http::withoutVerifying()
             ->baseUrl(
                 $this->sandbox
-                ? 'https://sandbox.sslcommerz.com'
-                : 'https://securepay.sslcommerz.com'
+                    ? 'https://sandbox.sslcommerz.com'
+                    : 'https://securepay.sslcommerz.com'
             )
             ->timeout(60);
     }

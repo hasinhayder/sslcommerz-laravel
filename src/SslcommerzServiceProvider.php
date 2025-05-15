@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Raziul\Sslcommerz;
 
 use Illuminate\Contracts\Foundation\Application;
