@@ -19,7 +19,7 @@ This package provides an easy and convenient way to integrate **SSLCommerz** pay
 ## Requirements
 
 -   PHP 8.2 or above
--   Laravel 10.0 or above
+-   Laravel 10.0 through 13.x
 -   SSLCommerz Credentials
 
 ## Installation
