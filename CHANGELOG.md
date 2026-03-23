@@ -4,6 +4,14 @@ All notable changes to `sslcommerz-laravel` will be documented in this file.
 
 ## Unreleased
 
+## v1.1.1 - 2026-03-23
+
+### What's Changed
+
+* Cleanup release
+
+## v1.1.0 - 2026-03-20
+
 ### What's Changed
 
 * Support for Laravel 13.x

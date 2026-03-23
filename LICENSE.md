@@ -1,6 +1,7 @@
 The MIT License (MIT)
 
-Copyright (c) raziul <raziul.cse@gmail.com>
+Copyright (c) 2026 Hasin Hayder <hasin@hasinhayder.com>
+Copyright (c) 2024 Raziul Islam <raziul.cse@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
