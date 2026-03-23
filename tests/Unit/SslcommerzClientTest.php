@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use Illuminate\Http\Client\Request;
-use Illuminate\Support\Facades\Http;
 use HasinHayder\Sslcommerz\Data\PaymentResponse;
 use HasinHayder\Sslcommerz\Data\RefundResponse;
 use HasinHayder\Sslcommerz\Data\RefundStatus;
 use HasinHayder\Sslcommerz\SslcommerzClient;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 
 describe('SslcommerzClient', function () {
     beforeEach(function () {

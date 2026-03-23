@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace HasinHayder\Sslcommerz\Facades;
 
+use HasinHayder\Sslcommerz\SslcommerzClient;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -19,12 +20,10 @@ use Illuminate\Support\Facades\Facade;
  * @method static \HasinHayder\Sslcommerz\Data\RefundResponse refundPayment(string $bankTransactionId, int|float $amount, string $reason)
  * @method static \HasinHayder\Sslcommerz\Data\RefundStatus checkRefundStatus(string $refundRefId)
  *
- * @see \HasinHayder\Sslcommerz\SslcommerzClient
+ * @see SslcommerzClient
  */
-class Sslcommerz extends Facade
-{
-    protected static function getFacadeAccessor(): string
-    {
-        return \HasinHayder\Sslcommerz\SslcommerzClient::class;
+class Sslcommerz extends Facade {
+    protected static function getFacadeAccessor(): string {
+        return SslcommerzClient::class;
     }
 }

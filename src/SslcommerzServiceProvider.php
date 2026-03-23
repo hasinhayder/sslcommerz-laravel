@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace HasinHayder\Sslcommerz;
 
-use Illuminate\Contracts\Foundation\Application;
 use HasinHayder\Sslcommerz\Exceptions\SslcommerzException;
+use Illuminate\Contracts\Foundation\Application;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class SslcommerzServiceProvider extends PackageServiceProvider
-{
-    public function configurePackage(Package $package): void
-    {
+class SslcommerzServiceProvider extends PackageServiceProvider {
+    public function configurePackage(Package $package): void {
         $package
             ->name('sslcommerz-laravel')
             ->hasConfigFile('sslcommerz')
@@ -24,8 +22,7 @@ class SslcommerzServiceProvider extends PackageServiceProvider
             });
     }
 
-    public function packageRegistered()
-    {
+    public function packageRegistered() {
         $this->app->singleton(SslcommerzClient::class, function (Application $app) {
             $config = $app->config->get('sslcommerz');
 

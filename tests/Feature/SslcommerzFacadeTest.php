@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Http;
 use HasinHayder\Sslcommerz\Data\PaymentResponse;
 use HasinHayder\Sslcommerz\Data\RefundResponse;
 use HasinHayder\Sslcommerz\Data\RefundStatus;
 use HasinHayder\Sslcommerz\Facades\Sslcommerz;
+use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
     config()->set('sslcommerz.store.id', 'test_store');

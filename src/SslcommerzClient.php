@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace HasinHayder\Sslcommerz;
 
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Facades\Http;
 use HasinHayder\Sslcommerz\Data\PaymentResponse;
 use HasinHayder\Sslcommerz\Data\RefundResponse;
 use HasinHayder\Sslcommerz\Data\RefundStatus;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Http;
 
-class SslcommerzClient
-{
+class SslcommerzClient {
     /**
      * The payload data to be sent with the request.
      */
@@ -68,8 +67,7 @@ class SslcommerzClient
     /**
      * Set the gateways to be displayed in the payment page.
      */
-    public function setGateways(array $gateways): self
-    {
+    public function setGateways(array $gateways): self {
         $this->data['multi_card_name'] = implode(',', $gateways);
 
         return $this;
@@ -86,8 +84,7 @@ class SslcommerzClient
      *     - travel-vertical
      *     - telecom-vertical
      */
-    public function setProductProfile(string $profile): self
-    {
+    public function setProductProfile(string $profile): self {
         $this->data['product_profile'] = $profile;
 
         return $this;
@@ -170,8 +167,7 @@ class SslcommerzClient
     /**
      * Make a payment through SSLCommerz.
      */
-    public function makePayment(array $additionalData = []): PaymentResponse
-    {
+    public function makePayment(array $additionalData = []): PaymentResponse {
         $response = $this->client()
             ->asForm()
             ->post('/gwprocess/v4/api.php', $this->mergeData($additionalData))
@@ -183,8 +179,7 @@ class SslcommerzClient
     /**
      * Validate a payment through SSLCommerz validator.
      */
-    public function validatePayment(array $payload, string $transactionId, int | float $amount, string $currency = 'BDT'): bool
-    {
+    public function validatePayment(array $payload, string $transactionId, int | float $amount, string $currency = 'BDT'): bool {
         if (empty($payload['val_id'])) {
             return false;
         }
@@ -218,8 +213,7 @@ class SslcommerzClient
     /**
      * Verify the hash from SSLCommerz response.
      */
-    public function verifyHash(array $data): bool
-    {
+    public function verifyHash(array $data): bool {
         if (empty($data['verify_sign']) || empty($data['verify_key'])) {
             return false;
         }
@@ -246,8 +240,7 @@ class SslcommerzClient
     /**
      * Refund a payment through SSLCommerz.
      */
-    public function refundPayment(string $bankTransactionId, int | float $amount, string $reason): RefundResponse
-    {
+    public function refundPayment(string $bankTransactionId, int | float $amount, string $reason): RefundResponse {
         $response = $this->client()->get('/validator/api/merchantTransIDvalidationAPI.php', [
             'store_id' => $this->storeId,
             'store_passwd' => $this->storePassword,
@@ -263,8 +256,7 @@ class SslcommerzClient
     /**
      * Check the refund status through SSLCommerz.
      */
-    public function checkRefundStatus(string $refundRefId): RefundStatus
-    {
+    public function checkRefundStatus(string $refundRefId): RefundStatus {
         $response = $this->client()->get('/validator/api/merchantTransIDvalidationAPI.php', [
             'store_id' => $this->storeId,
             'store_passwd' => $this->storePassword,
@@ -277,16 +269,14 @@ class SslcommerzClient
     /**
      * Merge and return all the data needed to make the payment.
      */
-    private function mergeData(array $additionalData = []): array
-    {
+    private function mergeData(array $additionalData = []): array {
         return $this->data + $this->order + $this->customer + $this->shipping + $additionalData;
     }
 
     /**
      * Instance of the HTTP client
      */
-    private function client(): PendingRequest
-    {
+    private function client(): PendingRequest {
         $http = Http::baseUrl(
             $this->sandbox
                 ? 'https://sandbox.sslcommerz.com'
