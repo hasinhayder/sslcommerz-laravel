@@ -1,7 +1,3 @@
-<a href="https://github.com/hasinhayder/sslcommerz-laravel">
-<img style="width: 100%; max-width: 100%;" alt="Sslcommerz Laravel Package" src="/art/sslcommerz laravel.png" >
-</a>
-
 # Sslcommerz Laravel Package
 
 This package provides an easy and convenient way to integrate **SSLCommerz** payment gateway into your **Laravel** application. With features like payment processing, payment validation, refunds, and hash verification, this package offers a simple API for developers to quickly implement payment functionality.
