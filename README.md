@@ -111,7 +111,6 @@ if ($response->success()) {
 }
 ```
 
-The `makePayment` method returns an instance of `HasinHayder\Sslcommerz\Data\PaymentResponse` class. Check the [available methods](https://github.com/hasinhayder/sslcommerz-laravel/wiki/PaymentResponse) for more details.
 
 ### 3. **Validating a Payment**
 
@@ -153,21 +152,9 @@ if (Sslcommerz::verifyHash($request->all())) {
 }
 ```
 
-## 📖 Documentation
-
-You can find detailed documentation, guides and examples on the [Wiki](https://github.com/hasinhayder/sslcommerz-laravel/wiki).
-
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
 
 ## Credits
 
