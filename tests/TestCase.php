@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Raziul\Sslcommerz\Tests;
+namespace HasinHayder\Sslcommerz\Tests;
 
 use Orchestra\Testbench\TestCase as Orchestra;
-use Raziul\Sslcommerz\SslcommerzServiceProvider;
+use HasinHayder\Sslcommerz\SslcommerzServiceProvider;
 
 class TestCase extends Orchestra
 {

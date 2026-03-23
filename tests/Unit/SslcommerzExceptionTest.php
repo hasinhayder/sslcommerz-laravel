@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Raziul\Sslcommerz\Exceptions\SslcommerzException;
+use HasinHayder\Sslcommerz\Exceptions\SslcommerzException;
 
 describe('SslcommerzException', function () {
     it('throws and returns message', function () {

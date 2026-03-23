@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Raziul\Sslcommerz\Data\PaymentResponse;
+use HasinHayder\Sslcommerz\Data\PaymentResponse;
 
 describe('PaymentResponse', function () {
     it('initializes with null data by default', function () {

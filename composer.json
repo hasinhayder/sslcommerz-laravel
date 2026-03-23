@@ -25,19 +25,19 @@
     "require-dev": {
         "laravel/pint": "^1.14",
         "nunomaduro/collision": "^8.1.1||^7.10.0||^8.6",
-        "orchestra/testbench": "^10.0.0||^11.0.0",
-        "pestphp/pest": "^2.34",
-        "pestphp/pest-plugin-arch": "^2.7",
-        "pestphp/pest-plugin-laravel": "^2.3"
+        "orchestra/testbench": "^10.0.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-arch": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0"
     },
     "autoload": {
         "psr-4": {
-            "Raziul\\Sslcommerz\\": "src/"
+            "HasinHayder\\Sslcommerz\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Raziul\\Sslcommerz\\Tests\\": "tests/",
+            "HasinHayder\\Sslcommerz\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -69,10 +69,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Raziul\\Sslcommerz\\SslcommerzServiceProvider"
+                "HasinHayder\\Sslcommerz\\SslcommerzServiceProvider"
             ],
             "aliases": {
-                "Sslcommerz": "Raziul\\Sslcommerz\\Facades\\Sslcommerz"
+                "Sslcommerz": "HasinHayder\\Sslcommerz\\Facades\\Sslcommerz"
             }
         }
     },

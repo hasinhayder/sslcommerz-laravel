@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Raziul\Sslcommerz;
+namespace HasinHayder\Sslcommerz;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
-use Raziul\Sslcommerz\Data\PaymentResponse;
-use Raziul\Sslcommerz\Data\RefundResponse;
-use Raziul\Sslcommerz\Data\RefundStatus;
+use HasinHayder\Sslcommerz\Data\PaymentResponse;
+use HasinHayder\Sslcommerz\Data\RefundResponse;
+use HasinHayder\Sslcommerz\Data\RefundStatus;
 
 class SslcommerzClient
 {

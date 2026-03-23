@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Raziul\Sslcommerz\Data\RefundStatus;
+use HasinHayder\Sslcommerz\Data\RefundStatus;
 
 describe('RefundStatus', function () {
     it('initializes with null data', function () {

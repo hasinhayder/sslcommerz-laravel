@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Raziul\Sslcommerz\Data;
+namespace HasinHayder\Sslcommerz\Data;
 
 class PaymentResponse
 {

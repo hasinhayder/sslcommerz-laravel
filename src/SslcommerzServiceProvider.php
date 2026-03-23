@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Raziul\Sslcommerz;
+namespace HasinHayder\Sslcommerz;
 
 use Illuminate\Contracts\Foundation\Application;
-use Raziul\Sslcommerz\Exceptions\SslcommerzException;
+use HasinHayder\Sslcommerz\Exceptions\SslcommerzException;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;

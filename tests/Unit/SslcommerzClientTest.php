@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Http;
-use Raziul\Sslcommerz\Data\PaymentResponse;
-use Raziul\Sslcommerz\Data\RefundResponse;
-use Raziul\Sslcommerz\Data\RefundStatus;
-use Raziul\Sslcommerz\SslcommerzClient;
+use HasinHayder\Sslcommerz\Data\PaymentResponse;
+use HasinHayder\Sslcommerz\Data\RefundResponse;
+use HasinHayder\Sslcommerz\Data\RefundStatus;
+use HasinHayder\Sslcommerz\SslcommerzClient;
 
 describe('SslcommerzClient', function () {
     beforeEach(function () {

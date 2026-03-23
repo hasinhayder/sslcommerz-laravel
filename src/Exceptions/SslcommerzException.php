@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Raziul\Sslcommerz\Exceptions;
+namespace HasinHayder\Sslcommerz\Exceptions;
 
 use Exception;
 

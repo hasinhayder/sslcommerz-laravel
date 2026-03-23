@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Raziul\Sslcommerz\Exceptions\SslcommerzException;
-use Raziul\Sslcommerz\SslcommerzClient;
-use Raziul\Sslcommerz\SslcommerzServiceProvider;
+use HasinHayder\Sslcommerz\Exceptions\SslcommerzException;
+use HasinHayder\Sslcommerz\SslcommerzClient;
+use HasinHayder\Sslcommerz\SslcommerzServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
 describe('SslcommerzServiceProvider', function () {

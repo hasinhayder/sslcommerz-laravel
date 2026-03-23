@@ -1,4 +1,4 @@
-<a href="https://github.com/iraziul/sslcommerz-laravel">
+<a href="https://github.com/hasinhayder/sslcommerz-laravel">
 <img style="width: 100%; max-width: 100%;" alt="Sslcommerz Laravel Package" src="/art/sslcommerz laravel.png" >
 </a>
 
@@ -27,7 +27,7 @@ This package provides an easy and convenient way to integrate **SSLCommerz** pay
 You can install the package via Composer:
 
 ```bash
-composer require raziul/sslcommerz-laravel
+composer require hasinhayder/sslcommerz-laravel
 ```
 
 Once installed, the service provider will be registered automatically.
@@ -96,7 +96,7 @@ Now create the `SslcommerzController` controller and implement the `success`, `f
 Initiating a payment has never been easier. For example, you can use the following code:
 
 ```php
-use \Raziul\Sslcommerz\Facades\Sslcommerz;
+use \HasinHayder\Sslcommerz\Facades\Sslcommerz;
 
 $response = Sslcommerz::setOrder($amount, $invoiceId, $productName)
     ->setCustomer($customerName, $customerEmail, $customerPhone)
@@ -111,14 +111,14 @@ if ($response->success()) {
 }
 ```
 
-The `makePayment` method returns an instance of `Raziul\Sslcommerz\Data\PaymentResponse` class. Check the [available methods](https://github.com/iRaziul/sslcommerz-laravel/wiki/PaymentResponse) for more details.
+The `makePayment` method returns an instance of `HasinHayder\Sslcommerz\Data\PaymentResponse` class. Check the [available methods](https://github.com/hasinhayder/sslcommerz-laravel/wiki/PaymentResponse) for more details.
 
 ### 3. **Validating a Payment**
 
 To validate a payment after a successful transaction:
 
 ```php
-use \Raziul\Sslcommerz\Facades\Sslcommerz;
+use \HasinHayder\Sslcommerz\Facades\Sslcommerz;
 
 $isValid = Sslcommerz::validatePayment($requestData, $transactionId, $amount);
 
@@ -155,7 +155,7 @@ if (Sslcommerz::verifyHash($request->all())) {
 
 ## 📖 Documentation
 
-You can find detailed documentation, guides and examples on the [Wiki](https://github.com/iraziul/sslcommerz-laravel/wiki).
+You can find detailed documentation, guides and examples on the [Wiki](https://github.com/hasinhayder/sslcommerz-laravel/wiki).
 
 ## Changelog
 
@@ -172,6 +172,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 ## Credits
 
 -   [Raziul Islam](https://github.com/iRaziul)
+-   [Hasin Hayder](https://github.com/hasinhayder)
 -   [All Contributors](../../contributors)
 
 ## License

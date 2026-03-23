@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// config for Raziul/Sslcommerz
+// config for HasinHayder/Sslcommerz
 
 return [
     /**
