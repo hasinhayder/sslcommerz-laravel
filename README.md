@@ -171,8 +171,8 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
--   [Raziul Islam](https://github.com/iRaziul)
 -   [Hasin Hayder](https://github.com/hasinhayder)
+-   [Raziul Islam](https://github.com/iRaziul)
 -   [All Contributors](../../contributors)
 
 ## License
