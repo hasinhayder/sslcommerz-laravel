@@ -12,8 +12,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Raziul Islam",
-            "email": "raziul.dev@gmail.com",
+            "name": "Hasin Hayder",
+            "email": "hasin@hasinhayder.com",
             "role": "Developer"
         }
     ],
@@ -32,8 +32,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Raziul\\Sslcommerz\\": "src/",
-            "Raziul\\Sslcommerz\\Database\\Factories\\": "database/factories/"
+            "Raziul\\Sslcommerz\\": "src/"
         }
     },
     "autoload-dev": {

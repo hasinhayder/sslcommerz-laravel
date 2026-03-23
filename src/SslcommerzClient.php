@@ -67,7 +67,6 @@ class SslcommerzClient
 
     /**
      * Set the gateways to be displayed in the payment page.
-     * To display all gateways, pass `null` as the argument.
      */
     public function setGateways(array $gateways): self
     {
@@ -184,7 +183,7 @@ class SslcommerzClient
     /**
      * Validate a payment through SSLCommerz validator.
      */
-    public function validatePayment(array $payload, string $transactionId, int | float $amount, string $currency = 'BDT')
+    public function validatePayment(array $payload, string $transactionId, int | float $amount, string $currency = 'BDT'): bool
     {
         if (empty($payload['val_id'])) {
             return false;
@@ -201,7 +200,7 @@ class SslcommerzClient
             return false;
         }
 
-        if (! isset($response['status'], $response['tran_id'], $response['amount']) || $response['status'] === 'INVALID_TRANSACTION ') {
+        if (! isset($response['status'], $response['tran_id'], $response['amount']) || trim($response['status']) === 'INVALID_TRANSACTION') {
             return false;
         }
 
@@ -288,12 +287,16 @@ class SslcommerzClient
      */
     private function client(): PendingRequest
     {
-        return Http::withoutVerifying()
-            ->baseUrl(
-                $this->sandbox
-                    ? 'https://sandbox.sslcommerz.com'
-                    : 'https://securepay.sslcommerz.com'
-            )
-            ->timeout(60);
+        $http = Http::baseUrl(
+            $this->sandbox
+                ? 'https://sandbox.sslcommerz.com'
+                : 'https://securepay.sslcommerz.com'
+        )->timeout(60);
+
+        if ($this->sandbox) {
+            $http = $http->withoutVerifying();
+        }
+
+        return $http;
     }
 }
