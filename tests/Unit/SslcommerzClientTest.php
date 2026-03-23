@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use HasinHayder\Sslcommerz\Data\PaymentResponse;
 use HasinHayder\Sslcommerz\Data\RefundResponse;
@@ -63,6 +64,55 @@ describe('SslcommerzClient', function () {
         $response = $client->makePayment();
         expect($response)->toBeInstanceOf(PaymentResponse::class);
         expect($response->status())->toBe('success');
+    });
+
+    it('uses the live gateway when sandbox mode is disabled', function () {
+        $liveClient = new SslcommerzClient('live_store', 'live_pass', 'BDT', false);
+
+        Http::fake([
+            'securepay.sslcommerz.com/gwprocess/v4/api.php' => Http::response([
+                'status' => 'SUCCESS',
+                'GatewayPageURL' => 'https://securepay.sslcommerz.com/gwprocess/v4/gateway.php?session=xyz',
+            ], 200),
+        ]);
+
+        $response = $liveClient->setOrder(1000, 'INV999', 'Live Product')->makePayment();
+
+        expect($response)->toBeInstanceOf(PaymentResponse::class);
+        expect($response->gatewayPageURL())->toBe('https://securepay.sslcommerz.com/gwprocess/v4/gateway.php?session=xyz');
+    });
+
+    it('merges payment payload data from callbacks gateways and additional data', function () {
+        Http::fake([
+            'sandbox.sslcommerz.com/gwprocess/v4/api.php' => Http::response([
+                'status' => 'SUCCESS',
+                'GatewayPageURL' => 'https://sandbox.sslcommerz.com/gwprocess/v4/gateway.php?session=abc',
+            ], 200),
+        ]);
+
+        $this->client
+            ->setCallbackUrls('success-url', 'failure-url', 'cancel-url', 'ipn-url')
+            ->setGateways(['bkash', 'dbbl'])
+            ->setOrder(1250, 'INV1250', 'Test Product', 'Category')
+            ->setCustomer('John Doe', 'john@example.com')
+            ->setShippingInfo(2, 'Dhaka')
+            ->makePayment([
+                'custom_field' => 'custom-value',
+            ]);
+
+        Http::assertSent(function (Request $request): bool {
+            $data = $request->data();
+
+            return $data['success_url'] === 'success-url'
+                && $data['fail_url'] === 'failure-url'
+                && $data['cancel_url'] === 'cancel-url'
+                && $data['ipn_url'] === 'ipn-url'
+                && $data['multi_card_name'] === 'bkash,dbbl'
+                && $data['custom_field'] === 'custom-value'
+                && $data['tran_id'] === 'INV1250'
+                && $data['cus_name'] === 'John Doe'
+                && $data['num_of_item'] === 2;
+        });
     });
 
     it('validates payment successfully', function () {
@@ -195,5 +245,22 @@ describe('SslcommerzClient', function () {
         $payload = ['val_id' => 'val123'];
         $result = $client->validatePayment($payload, 'INV123', 50, 'USD');
         expect($result)->toBeTrue();
+    });
+
+    it('returns false for payment validation when non-BDT currency details do not match', function () {
+        Http::fake([
+            'sandbox.sslcommerz.com/validator/api/validationserverAPI.php*' => Http::response([
+                'status' => 'VALID',
+                'tran_id' => 'INV123',
+                'amount' => 1000,
+                'currency_type' => 'USD',
+                'currency_amount' => 49,
+            ], 200),
+        ]);
+
+        $payload = ['val_id' => 'val123'];
+        $result = $this->client->validatePayment($payload, 'INV123', 50, 'USD');
+
+        expect($result)->toBeFalse();
     });
 });
