@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Documentation — SSLCommerz Laravel</title>
+	<meta name="description" content="Complete API documentation for the SSLCommerz Laravel payment gateway package.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg: #070b14;
+			--bg-raised: #0c1220;
+			--surface: #111a2e;
+			--surface-glass: rgba(14, 23, 44, 0.65);
+			--line: rgba(255,255,255,0.07);
+			--line-strong: rgba(255,255,255,0.12);
+			--text: #e8eef8;
+			--text-dim: #94a3be;
+			--accent: #00d4aa;
+			--accent-glow: rgba(0, 212, 170, 0.15);
+			--accent-2: #f0a030;
+			--danger: #f06070;
+			--radius: 16px;
+			--radius-sm: 12px;
+			--radius-xs: 8px;
+			--font-display: 'Inter', sans-serif;
+			--font-body: 'DM Sans', sans-serif;
+			--font-mono: 'Fira Code', monospace;
+			--sidebar-w: 280px;
+		}
+
+		*, *::before, *::after { box-sizing: border-box; margin: 0; }
+		html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+		body {
+			font-family: var(--font-body);
+			color: var(--text);
+			background: var(--bg);
+			min-height: 100vh;
+			overflow-x: hidden;
+			line-height: 1.6;
+		}
+
+		/* Ambient */
+		.ambient {
+			position: fixed; inset: 0;
+			pointer-events: none; z-index: 0; overflow: hidden;
+		}
+		.ambient-orb {
+			position: absolute; border-radius: 50%;
+			filter: blur(120px); opacity: 0.3;
+		}
+		.ambient-orb--1 {
+			width: 500px; height: 500px;
+			top: -10%; left: -8%;
+			background: radial-gradient(circle, rgba(0,212,170,0.25), transparent 70%);
+			animation: orbDrift1 20s ease-in-out infinite alternate;
+		}
+		.ambient-orb--2 {
+			width: 400px; height: 400px;
+			bottom: 10%; right: -10%;
+			background: radial-gradient(circle, rgba(240,160,48,0.15), transparent 70%);
+			animation: orbDrift2 25s ease-in-out infinite alternate;
+		}
+		@keyframes orbDrift1 { to { transform: translate(60px, 40px); } }
+		@keyframes orbDrift2 { to { transform: translate(-40px, -60px); } }
+
+		.noise {
+			position: fixed; inset: 0;
+			pointer-events: none; z-index: 0; opacity: 0.025;
+			background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+			background-size: 200px 200px;
+		}
+
+		a { color: inherit; text-decoration: none; }
+
+		/* ── Navbar ── */
+		.docs-navbar {
+			position: sticky; top: 0; z-index: 100;
+			padding: 16px 0;
+			border-bottom: 1px solid var(--line);
+			background: rgba(7,11,20,0.85);
+			backdrop-filter: blur(18px);
+		}
+		.docs-navbar-inner {
+			display: flex; align-items: center; justify-content: space-between;
+			gap: 16px;
+			padding: 0 28px;
+		}
+		.nav-brand {
+			display: flex; align-items: center; gap: 10px;
+			font-family: var(--font-display); font-weight: 700;
+			font-size: 1rem; letter-spacing: -0.02em;
+		}
+		.nav-brand-icon {
+			width: 32px; height: 32px; border-radius: 9px;
+			display: grid; place-items: center;
+			background: linear-gradient(135deg, var(--accent), #00b4dc);
+			color: var(--bg); font-family: var(--font-display);
+			font-weight: 800; font-size: 0.8rem;
+		}
+		.nav-right {
+			display: flex; align-items: center; gap: 10px;
+		}
+		.btn {
+			display: inline-flex; align-items: center; gap: 8px;
+			padding: 8px 16px; border-radius: 999px;
+			font-family: var(--font-body); font-weight: 600;
+			font-size: 0.85rem; border: 1px solid transparent;
+			cursor: pointer; transition: all 0.2s; white-space: nowrap;
+		}
+		.btn:hover { transform: translateY(-1px); }
+		.btn-primary {
+			background: var(--accent); color: var(--bg);
+			box-shadow: 0 4px 16px rgba(0,212,170,0.2);
+		}
+		.btn-ghost {
+			background: transparent; border-color: var(--line-strong);
+			color: var(--text);
+		}
+		.btn-ghost:hover { background: rgba(255,255,255,0.04); }
+
+		/* ── Layout ── */
+		.docs-layout {
+			position: relative; z-index: 1;
+			display: grid;
+			grid-template-columns: var(--sidebar-w) 1fr;
+			min-height: calc(100vh - 65px);
+		}
+
+		/* ── Sidebar ── */
+		.sidebar {
+			position: sticky; top: 65px;
+			height: calc(100vh - 65px);
+			overflow-y: auto;
+			padding: 28px 24px 28px 28px;
+			border-right: 1px solid var(--line);
+			scrollbar-width: thin;
+			scrollbar-color: rgba(255,255,255,0.08) transparent;
+		}
+		.sidebar::-webkit-scrollbar { width: 4px; }
+		.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+		.sidebar-group { margin-bottom: 28px; }
+		.sidebar-group-title {
+			font-family: var(--font-display);
+			font-size: 0.72rem; font-weight: 700;
+			color: var(--text-dim);
+			text-transform: uppercase; letter-spacing: 0.1em;
+			margin-bottom: 10px;
+		}
+		.sidebar-link {
+			display: block;
+			padding: 7px 12px;
+			border-radius: var(--radius-xs);
+			font-size: 0.88rem;
+			color: var(--text-dim);
+			transition: all 0.15s;
+			margin-bottom: 2px;
+		}
+		.sidebar-link:hover {
+			color: var(--text);
+			background: rgba(255,255,255,0.04);
+		}
+		.sidebar-link.active {
+			color: var(--accent);
+			background: var(--accent-glow);
+			font-weight: 600;
+		}
+
+		/* ── Content ── */
+		.content {
+			padding: 40px 48px 100px;
+			max-width: 780px;
+		}
+
+		/* Page header */
+		.page-header {
+			margin-bottom: 48px;
+			padding-bottom: 32px;
+			border-bottom: 1px solid var(--line);
+		}
+		.page-header h1 {
+			font-family: var(--font-display);
+			font-size: clamp(2rem, 3.5vw, 2.6rem);
+			font-weight: 800;
+			letter-spacing: -0.04em;
+			line-height: 1.15;
+			margin-bottom: 12px;
+		}
+		.page-header p {
+			color: var(--text-dim);
+			font-size: 1.05rem;
+			line-height: 1.7;
+			max-width: 56ch;
+		}
+
+		/* Sections */
+		.doc-section {
+			margin-bottom: 48px;
+			scroll-margin-top: 90px;
+		}
+		.doc-section h2 {
+			font-family: var(--font-display);
+			font-size: 1.5rem;
+			font-weight: 700;
+			letter-spacing: -0.03em;
+			margin-bottom: 16px;
+			display: flex; align-items: center; gap: 10px;
+		}
+		.doc-section h2 .section-icon {
+			width: 28px; height: 28px; border-radius: 8px;
+			display: grid; place-items: center;
+			font-size: 0.8rem;
+			background: var(--accent-glow);
+			border: 1px solid rgba(0,212,170,0.2);
+			color: var(--accent);
+		}
+		.doc-section h3 {
+			font-family: var(--font-display);
+			font-size: 1.1rem;
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			margin: 24px 0 10px;
+		}
+		.doc-section p {
+			color: var(--text-dim);
+			font-size: 0.95rem;
+			line-height: 1.75;
+			margin-bottom: 14px;
+		}
+		.doc-section ul {
+			padding-left: 0; list-style: none;
+			margin: 10px 0 14px;
+			display: grid; gap: 8px;
+		}
+		.doc-section li {
+			position: relative;
+			padding-left: 20px;
+			color: var(--text-dim);
+			font-size: 0.93rem;
+			line-height: 1.65;
+		}
+		.doc-section li::before {
+			content: '';
+			position: absolute; left: 0; top: 0.65em;
+			width: 6px; height: 6px; border-radius: 50%;
+			background: var(--accent);
+		}
+
+		/* Code blocks */
+		.code {
+			position: relative;
+			margin: 14px 0 18px;
+			border-radius: var(--radius-sm);
+			background: rgba(4,10,22,0.7);
+			border: 1px solid var(--line);
+			overflow: hidden;
+		}
+		.code-header {
+			display: flex; align-items: center; justify-content: space-between;
+			padding: 10px 16px;
+			border-bottom: 1px solid var(--line);
+			font-size: 0.76rem; color: var(--text-dim);
+			font-family: var(--font-mono);
+		}
+		.code-copy {
+			background: none; border: 1px solid var(--line-strong);
+			color: var(--text-dim); padding: 4px 10px;
+			border-radius: 6px; font-size: 0.72rem;
+			font-family: var(--font-body); cursor: pointer;
+			transition: all 0.15s;
+		}
+		.code-copy:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+		.code-copy.copied { color: var(--accent); border-color: rgba(0,212,170,0.3); }
+
+		.code pre {
+			padding: 16px 18px; margin: 0;
+			font-family: var(--font-mono);
+			font-size: 0.84rem;
+			line-height: 1.85;
+			color: #c4daf0;
+			overflow-x: auto;
+			white-space: pre-wrap;
+		}
+		.code .kw { color: #c792ea; }
+		.code .fn { color: #82d8b8; }
+		.code .str { color: #f0c878; }
+		.code .var { color: #89ddff; }
+		.code .cm { color: #4a6070; }
+		.code .op { color: #89ddff; }
+		.code .type { color: #ffcb6b; }
+		.code .val { color: #f78c6c; }
+
+		/* Inline code */
+		.doc-section code, p code, li code {
+			font-family: var(--font-mono);
+			font-size: 0.88em;
+			padding: 2px 7px;
+			border-radius: 5px;
+			background: rgba(255,255,255,0.06);
+			border: 1px solid var(--line);
+			color: #82d8b8;
+		}
+
+		/* Method signature block */
+		.method-sig {
+			padding: 16px 20px;
+			border-radius: var(--radius-sm);
+			background: rgba(0,212,170,0.04);
+			border: 1px solid rgba(0,212,170,0.1);
+			font-family: var(--font-mono);
+			font-size: 0.84rem;
+			line-height: 1.8;
+			color: #b0d0e8;
+			margin: 10px 0 14px;
+			overflow-x: auto;
+		}
+		.method-sig pre {
+			margin: 0;
+			font-family: inherit;
+			font-size: inherit;
+			line-height: inherit;
+			color: inherit;
+			white-space: pre;
+		}
+
+		/* Info callout */
+		.callout {
+			padding: 16px 20px;
+			border-radius: var(--radius-sm);
+			margin: 16px 0;
+			border-left: 3px solid;
+		}
+		.callout--info {
+			background: rgba(0,212,170,0.05);
+			border-color: var(--accent);
+		}
+		.callout--warn {
+			background: rgba(240,160,48,0.05);
+			border-color: var(--accent-2);
+		}
+		.callout p {
+			margin: 0 !important;
+			font-size: 0.9rem;
+		}
+		.callout strong { color: var(--text); }
+
+		/* Table */
+		.doc-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 14px 0 18px;
+			font-size: 0.88rem;
+		}
+		.doc-table th {
+			text-align: left;
+			padding: 10px 14px;
+			background: rgba(255,255,255,0.03);
+			border-bottom: 1px solid var(--line-strong);
+			font-family: var(--font-mono);
+			font-size: 0.8rem;
+			font-weight: 600;
+			color: var(--text);
+			letter-spacing: 0.02em;
+		}
+		.doc-table td {
+			padding: 10px 14px;
+			border-bottom: 1px solid var(--line);
+			color: var(--text-dim);
+		}
+		.doc-table td:first-child {
+			font-family: var(--font-mono);
+			color: #82d8b8;
+			font-size: 0.84rem;
+		}
+		.doc-table tr:last-child td { border-bottom: none; }
+
+		/* Divider */
+		.doc-divider {
+			border: none;
+			border-top: 1px solid var(--line);
+			margin: 40px 0;
+		}
+
+		/* Flow diagram */
+		.flow {
+			display: grid;
+			grid-template-columns: auto 1fr auto;
+			gap: 0 20px;
+			align-items: center;
+			margin: 20px 0 24px;
+			font-family: var(--font-mono);
+			font-size: 0.78rem;
+		}
+		.flow-step {
+			padding: 12px 18px;
+			border-radius: var(--radius-xs);
+			background: rgba(0,212,170,0.06);
+			border: 1px solid rgba(0,212,170,0.15);
+			color: var(--accent);
+			font-weight: 600;
+			text-align: center;
+			white-space: nowrap;
+		}
+		.flow-step--user {
+			background: rgba(255,255,255,0.04);
+			border-color: var(--line-strong);
+			color: var(--text-dim);
+		}
+		.flow-arrow {
+			color: var(--text-dim);
+			font-size: 0.7rem;
+			letter-spacing: 0.05em;
+		}
+
+		/* Mobile sidebar toggle */
+		.sidebar-toggle {
+			display: none;
+			position: fixed; bottom: 24px; left: 24px;
+			z-index: 200;
+			width: 48px; height: 48px;
+			border-radius: 50%;
+			background: var(--accent);
+			color: var(--bg);
+			border: none;
+			font-size: 1.2rem;
+			cursor: pointer;
+			box-shadow: 0 8px 24px rgba(0,212,170,0.3);
+		}
+
+		/* ── Responsive ── */
+		@media (max-width: 900px) {
+			.sidebar {
+				position: fixed; left: -320px; top: 65px;
+				z-index: 150;
+				background: var(--bg);
+				transition: left 0.3s ease;
+				box-shadow: 16px 0 40px rgba(0,0,0,0.4);
+			}
+			.sidebar.open { left: 0; }
+			.sidebar-toggle { display: grid; place-items: center; }
+			.docs-layout { grid-template-columns: 1fr; }
+			.content { padding: 28px 24px 100px; }
+		}
+	</style>
+</head>
+<body>
+	<div class="ambient" aria-hidden="true">
+		<div class="ambient-orb ambient-orb--1"></div>
+		<div class="ambient-orb ambient-orb--2"></div>
+	</div>
+	<div class="noise" aria-hidden="true"></div>
+
+	<!-- Navbar -->
+	<header class="docs-navbar">
+		<div class="docs-navbar-inner">
+			<a class="nav-brand" href="index.html">
+				<span class="nav-brand-icon">S</span>
+				<span>SSLCommerz Laravel</span>
+			</a>
+			<div class="nav-right">
+				<a class="btn btn-ghost" href="index.html">Home</a>
+				<a class="btn btn-primary" href="https://github.com/hasinhayder/sslcommerz-laravel" target="_blank" rel="noreferrer">GitHub</a>
+			</div>
+		</div>
+	</header>
+
+	<div class="docs-layout">
+		<!-- Sidebar -->
+		<aside class="sidebar" id="sidebar">
+			<div class="sidebar-group">
+				<div class="sidebar-group-title">Getting Started</div>
+				<a class="sidebar-link active" href="#overview">Overview</a>
+				<a class="sidebar-link" href="#installation">Installation</a>
+				<a class="sidebar-link" href="#configuration">Configuration</a>
+			</div>
+			<div class="sidebar-group">
+				<div class="sidebar-group-title">Integration</div>
+				<a class="sidebar-link" href="#routes">Routes</a>
+				<a class="sidebar-link" href="#payment-flow">Payment Flow</a>
+				<a class="sidebar-link" href="#complete-controller">Complete Controller</a>
+			</div>
+			<div class="sidebar-group">
+				<div class="sidebar-group-title">Refunds</div>
+				<a class="sidebar-link" href="#refunds">Refunds</a>
+			</div>
+			<div class="sidebar-group">
+				<div class="sidebar-group-title">Reference</div>
+				<a class="sidebar-link" href="#api-reference">API Reference</a>
+				<a class="sidebar-link" href="#response-objects">Response Objects</a>
+			</div>
+		</aside>
+
+		<!-- Content -->
+		<div class="content">
+			<div class="page-header">
+				<h1>Documentation</h1>
+				<p>Integrate SSLCommerz payments into your Laravel application in minutes.</p>
+			</div>
+
+			<!-- Overview -->
+			<section class="doc-section" id="overview">
+				<h2><span class="section-icon">01</span>Overview</h2>
+				<p>A fluent, facade-driven Laravel package for SSLCommerz payment gateway. Supports the complete payment lifecycle &mdash; initiating payments, validating transactions, processing refunds, and verifying hash integrity.</p>
+				<div class="callout callout--info">
+					<p><strong>Requirements:</strong> PHP 8.2+ and Laravel 10, 11, 12, or 13.</p>
+				</div>
+			</section>
+
+			<!-- Installation -->
+			<section class="doc-section" id="installation">
+				<h2><span class="section-icon">02</span>Installation</h2>
+				<div class="code">
+					<div class="code-header"><span>terminal</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+					<pre>composer require hasinhayder/sslcommerz-laravel
+php artisan sslcommerz-laravel:install</pre>
+				</div>
+				<p>This publishes the configuration file to <code>config/sslcommerz.php</code>. The package auto-registers via Laravel's package discovery &mdash; no manual service provider registration needed.</p>
+			</section>
+
+			<!-- Configuration -->
+			<section class="doc-section" id="configuration">
+				<h2><span class="section-icon">03</span>Configuration</h2>
+				<div class="code">
+					<div class="code-header"><span>.env</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+					<pre><span class="cm"># Sandbox mode (default: true)</span>
+SSLC_SANDBOX=<span class="val">true</span>
+
+<span class="cm"># Store credentials (required)</span>
+SSLC_STORE_ID=<span class="val">your_store_id</span>
+SSLC_STORE_PASSWORD=<span class="val">your_store_password</span>
+
+<span class="cm"># Currency (default: BDT)</span>
+SSLC_STORE_CURRENCY=<span class="val">BDT</span>
+
+<span class="cm"># Callback route names (optional, set to match your routes)</span>
+SSLC_ROUTE_SUCCESS=<span class="val">sslc.success</span>
+SSLC_ROUTE_FAILURE=<span class="val">sslc.failure</span>
+SSLC_ROUTE_CANCEL=<span class="val">sslc.cancel</span>
+SSLC_ROUTE_IPN=<span class="val">sslc.ipn</span></pre>
+				</div>
+				<table class="doc-table">
+					<thead>
+						<tr><th>Key</th><th>Default</th><th>Description</th></tr>
+					</thead>
+					<tbody>
+						<tr><td>sandbox</td><td>true</td><td>Enable sandbox mode for testing</td></tr>
+						<tr><td>store.id</td><td>&mdash;</td><td>SSLCommerz store ID</td></tr>
+						<tr><td>store.password</td><td>&mdash;</td><td>SSLCommerz store password</td></tr>
+						<tr><td>store.currency</td><td>BDT</td><td>Transaction currency</td></tr>
+						<tr><td>product_profile</td><td>general</td><td>Product profile type</td></tr>
+					</tbody>
+				</table>
+				<h3>Available product profiles</h3>
+				<ul>
+					<li><code>general</code> &mdash; digital goods, subscriptions (default)</li>
+					<li><code>physical-goods</code></li>
+					<li><code>non-physical-goods</code></li>
+					<li><code>airline-tickets</code></li>
+					<li><code>travel-vertical</code></li>
+					<li><code>telecom-vertical</code></li>
+				</ul>
+			</section>
+
+			<hr class="doc-divider">
+
+			<!-- Routes -->
+			<section class="doc-section" id="routes">
+				<h2><span class="section-icon">04</span>Routes</h2>
+				<p>You need two route groups: one for the initiation entry point (GET), and one for SSLCommerz callbacks (POST). The callback routes must exclude CSRF verification because SSLCommerz posts to them from its servers.</p>
+				<div class="code">
+					<div class="code-header"><span>routes/web.php</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+					<pre><span class="kw">use</span> App\Http\Controllers\<span class="fn">SSLCommerzController</span>;
+<span class="kw">use</span> Illuminate\Foundation\Http\Middleware\<span class="fn">VerifyCsrfToken</span>;
+
+<span class="cm">// Entry point: user clicks "Pay" on your checkout page</span>
+Route::<span class="fn">get</span>(<span class="str">'sslcommerz/initiate/{order}'</span>, [<span class="type">SSLCommerzController</span>::<span class="kw">class</span>, <span class="str">'initiate'</span>])
+    -><span class="fn">name</span>(<span class="str">'sslc.initiate'</span>);
+
+<span class="cm">// Callbacks: SSLCommerz posts back to these after payment</span>
+Route::<span class="fn">controller</span>(<span class="type">SSLCommerzController</span>::<span class="kw">class</span>)
+    -><span class="fn">prefix</span>(<span class="str">'sslcommerz'</span>)
+    -><span class="fn">name</span>(<span class="str">'sslc.'</span>)
+    -><span class="fn">withoutMiddleware</span>([<span class="type">VerifyCsrfToken</span>::<span class="kw">class</span>])
+    -><span class="fn">group</span>(<span class="kw">function</span> () {
+        Route::<span class="fn">post</span>(<span class="str">'success'</span>, <span class="str">'success'</span>)-><span class="fn">name</span>(<span class="str">'success'</span>);
+        Route::<span class="fn">post</span>(<span class="str">'failure'</span>, <span class="str">'failure'</span>)-><span class="fn">name</span>(<span class="str">'failure'</span>);
+        Route::<span class="fn">post</span>(<span class="str">'cancel'</span>,  <span class="str">'cancel'</span>)-><span class="fn">name</span>(<span class="str">'cancel'</span>);
+        Route::<span class="fn">post</span>(<span class="str">'ipn'</span>,     <span class="str">'ipn'</span>)-><span class="fn">name</span>(<span class="str">'ipn'</span>);
+    });</pre>
+				</div>
+				<div class="callout callout--warn">
+					<p><strong>CSRF exemption is required.</strong> SSLCommerz sends POST requests from its own servers to your callback URLs. Without <code>withoutMiddleware([VerifyCsrfToken::class])</code>, Laravel will reject them with a 419 error.</p>
+				</div>
+				<div class="callout callout--info">
+					<p><strong>Auto-generated callback URLs:</strong> If you set <code>SSLC_ROUTE_SUCCESS</code> etc. in your <code>.env</code>, the package automatically generates the full callback URLs from your route names. You don't need to call <code>setCallbackUrls()</code> manually.</p>
+				</div>
+			</section>
+
+			<!-- Payment Flow -->
+			<section class="doc-section" id="payment-flow">
+				<h2><span class="section-icon">05</span>Payment Flow</h2>
+				<p>Here's what happens when a customer clicks "Pay":</p>
+
+				<div class="flow">
+					<div class="flow-step flow-step--user">Customer clicks Pay</div>
+					<div class="flow-arrow">&rarr;</div>
+					<div class="flow-step">Your Controller</div>
+				</div>
+				<div class="flow" style="margin-top: -8px;">
+					<div class="flow-step">Your Controller</div>
+					<div class="flow-arrow">&rarr;</div>
+					<div class="flow-step">SSLCommerz Gateway</div>
+				</div>
+				<div class="flow" style="margin-top: -8px;">
+					<div class="flow-step">SSLCommerz Gateway</div>
+					<div class="flow-arrow">&rarr;</div>
+					<div class="flow-step flow-step--user">Customer pays</div>
+				</div>
+				<div class="flow" style="margin-top: -8px;">
+					<div class="flow-step flow-step--user">Customer pays</div>
+					<div class="flow-arrow">&rarr;</div>
+					<div class="flow-step">POST /sslcommerz/success</div>
+				</div>
+				<div class="flow" style="margin-top: -8px;">
+					<div class="flow-step">POST /sslcommerz/success</div>
+					<div class="flow-arrow">&rarr;</div>
+					<div class="flow-step">verifyHash() + validatePayment()</div>
+				</div>
+				<div class="flow" style="margin-top: -8px;">
+					<div class="flow-step">verifyHash() + validatePayment()</div>
+					<div class="flow-arrow">&rarr;</div>
+					<div class="flow-step">Activate Order</div>
+				</div>
+
+				<p style="margin-top: 20px;">In parallel, SSLCommerz also sends an <strong>IPN</strong> (Instant Payment Notification) directly to your server. Always handle IPN to catch payments that complete after the user closes their browser.</p>
+			</section>
+
+			<!-- Complete Controller -->
+			<section class="doc-section" id="complete-controller">
+				<h2><span class="section-icon">06</span>Complete Controller</h2>
+				<p>A production-ready controller covering the full payment lifecycle. Adapt the <code>Order</code> model references to match your application.</p>
+
+				<h3>Initiate a payment</h3>
+				<p>Store order context in the session before redirecting. You'll retrieve it in the success callback to create your database records.</p>
+				<div class="code">
+					<div class="code-header"><span>SSLCommerzController.php &mdash; initiate()</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+					<pre><span class="kw">use</span> HasinHayder\<span class="fn">Sslcommerz</span>\Facades\<span class="fn">Sslcommerz</span>;
+<span class="kw">use</span> Illuminate\Support\Facades\<span class="fn">Log</span>;
+<span class="kw">use</span> Illuminate\Support\<span class="fn">Str</span>;
+
+<span class="kw">public function</span> <span class="fn">initiate</span>(Request <span class="var">$request</span>, Order <span class="var">$order</span>)
+{
+    <span class="var">$user</span> = auth()->user();
+    <span class="var">$invoiceId</span> = <span class="str">'INV-'</span> . strtoupper(Str::<span class="fn">random</span>(<span class="val">10</span>)) . <span class="str">'-'</span> . <span class="var">$order</span>->id;
+    <span class="var">$amount</span>    = <span class="var">$order</span>->total;
+
+    <span class="cm">// Store context for the success callback</span>
+    <span class="fn">session</span>([
+        <span class="str">'sslc_order_id'</span>  => <span class="var">$order</span>->id,
+        <span class="str">'sslc_user_id'</span>  => <span class="var">$user</span>->id,
+        <span class="str">'sslc_invoice'</span>  => <span class="var">$invoiceId</span>,
+    ]);
+
+    <span class="kw">try</span> {
+        <span class="var">$response</span> = <span class="fn">Sslcommerz</span>::<span class="fn">setOrder</span>(<span class="var">$amount</span>, <span class="var">$invoiceId</span>, <span class="var">$order</span>->product_name)
+            -><span class="fn">setCustomer</span>(<span class="var">$user</span>->name, <span class="var">$user</span>->email)
+            -><span class="fn">setShippingInfo</span>(<span class="val">1</span>, <span class="str">'Dhaka, Bangladesh'</span>)
+            -><span class="fn">makePayment</span>();
+
+        <span class="kw">if</span> (<span class="var">$response</span>-><span class="fn">success</span>()) {
+            <span class="kw">return</span> <span class="fn">redirect</span>(<span class="var">$response</span>-><span class="fn">gatewayPageURL</span>());
+        }
+
+        Log::<span class="fn">error</span>(<span class="str">'SSLCommerz initiation failed'</span>, [
+            <span class="str">'status'</span>   => <span class="var">$response</span>-><span class="fn">status</span>(),
+            <span class="str">'order_id'</span> => <span class="var">$order</span>->id,
+        ]);
+        <span class="kw">return</span> <span class="fn">back</span>()-><span class="fn">withErrors</span>([<span class="str">'Payment initiation failed. Please try again.'</span>]);
+
+    } <span class="kw">catch</span> (\Exception <span class="var">$e</span>) {
+        Log::<span class="fn">error</span>(<span class="str">'SSLCommerz exception'</span>, [<span class="str">'error'</span> => <span class="var">$e</span>-><span class="fn">getMessage</span>()]);
+        <span class="kw">return</span> <span class="fn">back</span>()-><span class="fn">withErrors</span>([<span class="str">'Connection error. Please try again.'</span>]);
+    }
+}</pre>
+				</div>
+
+				<h3>Handle success callback</h3>
+				<p>Always verify the hash first, then validate the payment. Retrieve the order context from session and guard against duplicate processing.</p>
+				<div class="code">
+					<div class="code-header"><span>SSLCommerzController.php &mdash; success()</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+					<pre><span class="kw">public function</span> <span class="fn">success</span>(Request <span class="var">$request</span>)
+{
+    <span class="cm">// 1. Verify hash — prevents tampered data</span>
+    <span class="kw">if</span> (! <span class="fn">Sslcommerz</span>::<span class="fn">verifyHash</span>(<span class="var">$request</span>-><span class="fn">all</span>())) {
+        Log::<span class="fn">warning</span>(<span class="str">'Hash verification failed'</span>, <span class="var">$request</span>-><span class="fn">all</span>());
+        <span class="kw">return</span> <span class="fn">redirect</span>()-><span class="fn">route</span>(<span class="str">'home'</span>)
+            -><span class="fn">withErrors</span>([<span class="str">'Payment verification failed.'</span>]);
+    }
+
+    <span class="var">$transactionId</span> = <span class="var">$request</span>-><span class="fn">input</span>(<span class="str">'tran_id'</span>);
+    <span class="var">$amount</span> = <span class="var">$request</span>-><span class="fn">input</span>(<span class="str">'amount'</span>);
+
+    <span class="cm">// 2. Validate payment with SSLCommerz</span>
+    <span class="kw">if</span> (! <span class="fn">Sslcommerz</span>::<span class="fn">validatePayment</span>(<span class="var">$request</span>-><span class="fn">all</span>(), <span class="var">$transactionId</span>, <span class="var">$amount</span>)) {
+        Log::<span class="fn">warning</span>(<span class="str">'Payment validation failed'</span>, [<span class="str">'tran_id'</span> => <span class="var">$transactionId</span>]);
+        <span class="kw">return</span> <span class="fn">redirect</span>()-><span class="fn">route</span>(<span class="str">'home'</span>)
+            -><span class="fn">withErrors</span>([<span class="str">'Payment could not be validated.'</span>]);
+    }
+
+    <span class="cm">// 3. Retrieve order from session</span>
+    <span class="var">$orderId</span> = <span class="fn">session</span>(<span class="str">'sslc_order_id'</span>);
+    <span class="var">$userId</span>  = <span class="fn">session</span>(<span class="str">'sslc_user_id'</span>);
+
+    <span class="kw">if</span> (! <span class="var">$orderId</span> || ! <span class="var">$userId</span>) {
+        <span class="kw">return</span> <span class="fn">redirect</span>()-><span class="fn">route</span>(<span class="str">'home'</span>)
+            -><span class="fn">withErrors</span>([<span class="str">'Session expired. Contact support with ID: '</span> . <span class="var">$transactionId</span>]);
+    }
+
+    <span class="var">$order</span> = Order::<span class="fn">find</span>(<span class="var">$orderId</span>);
+
+    <span class="cm">// 4. Prevent duplicate processing</span>
+    <span class="kw">if</span> (! <span class="var">$order</span>-><span class="fn">isPaid</span>()) {
+        <span class="var">$order</span>-><span class="fn">update</span>([
+            <span class="str">'status'</span>           => <span class="str">'paid'</span>,
+            <span class="str">'transaction_id'</span>   => <span class="var">$transactionId</span>,
+            <span class="str">'payment_gateway'</span>  => <span class="str">'sslcommerz'</span>,
+            <span class="str">'paid_at'</span>          => now(),
+        ]);
+    }
+
+    <span class="cm">// 5. Clean up session</span>
+    <span class="fn">session</span>()-><span class="fn">forget</span>([<span class="str">'sslc_order_id'</span>, <span class="str">'sslc_user_id'</span>, <span class="str">'sslc_invoice'</span>]);
+
+    <span class="kw">return</span> <span class="fn">redirect</span>()-><span class="fn">route</span>(<span class="str">'orders.show'</span>, <span class="var">$order</span>)
+        -><span class="fn">with</span>(<span class="str">'success'</span>, <span class="str">'Payment successful!'</span>);
+}</pre>
+				</div>
+
+				<h3>Handle failure, cancel, and IPN</h3>
+				<div class="code">
+					<div class="code-header"><span>SSLCommerzController.php &mdash; failure(), cancel(), ipn()</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+					<pre><span class="kw">public function</span> <span class="fn">failure</span>(Request <span class="var">$request</span>)
+{
+    Log::<span class="fn">warning</span>(<span class="str">'SSLCommerz payment failed'</span>, <span class="var">$request</span>-><span class="fn">all</span>());
+    <span class="fn">session</span>()-><span class="fn">forget</span>([<span class="str">'sslc_order_id'</span>, <span class="str">'sslc_user_id'</span>, <span class="str">'sslc_invoice'</span>]);
+    <span class="kw">return</span> <span class="fn">redirect</span>()-><span class="fn">route</span>(<span class="str">'home'</span>)
+        -><span class="fn">withErrors</span>([<span class="str">'Payment could not be processed.'</span>]);
+}
+
+<span class="kw">public function</span> <span class="fn">cancel</span>(Request <span class="var">$request</span>)
+{
+    Log::<span class="fn">info</span>(<span class="str">'SSLCommerz payment cancelled'</span>, <span class="var">$request</span>-><span class="fn">all</span>());
+    <span class="fn">session</span>()-><span class="fn">forget</span>([<span class="str">'sslc_order_id'</span>, <span class="str">'sslc_user_id'</span>, <span class="str">'sslc_invoice'</span>]);
+    <span class="kw">return</span> <span class="fn">redirect</span>()-><span class="fn">route</span>(<span class="str">'home'</span>)
+        -><span class="fn">with</span>(<span class="str">'info'</span>, <span class="str">'Payment was cancelled.'</span>);
+}
+
+<span class="cm">/**
+ * IPN — server-to-server notification from SSLCommerz.
+ * Do NOT redirect. Always return JSON.
+ */</span>
+<span class="kw">public function</span> <span class="fn">ipn</span>(Request <span class="var">$request</span>)
+{
+    <span class="kw">if</span> (! <span class="fn">Sslcommerz</span>::<span class="fn">verifyHash</span>(<span class="var">$request</span>-><span class="fn">all</span>())) {
+        <span class="kw">return</span> <span class="fn">response</span>()-><span class="fn">json</span>([<span class="str">'error'</span> => <span class="str">'Hash verification failed'</span>], <span class="val">400</span>);
+    }
+
+    <span class="var">$transactionId</span> = <span class="var">$request</span>-><span class="fn">input</span>(<span class="str">'tran_id'</span>);
+    <span class="var">$status</span> = <span class="var">$request</span>-><span class="fn">input</span>(<span class="str">'status'</span>);
+
+    <span class="kw">if</span> (<span class="var">$status</span> === <span class="str">'VALID'</span> || <span class="var">$status</span> === <span class="str">'VALIDATED'</span>) {
+        <span class="var">$order</span> = Order::<span class="fn">where</span>(<span class="str">'transaction_id'</span>, <span class="var">$transactionId</span>)-><span class="fn">first</span>();
+        <span class="kw">if</span> (<span class="var">$order</span> && ! <span class="var">$order</span>-><span class="fn">isPaid</span>()) {
+            <span class="var">$order</span>-><span class="fn">update</span>([<span class="str">'status'</span> => <span class="str">'paid'</span>, <span class="str">'paid_at'</span> => now()]);
+        }
+    }
+
+    <span class="kw">return</span> <span class="fn">response</span>()-><span class="fn">json</span>([<span class="str">'received'</span> => <span class="kw">true</span>], <span class="val">200</span>);
+}</pre>
+				</div>
+
+				<div class="callout callout--warn">
+					<p><strong>Session context is key.</strong> Store order details in the session before redirecting to SSLCommerz. Retrieve them in the success callback to create your database records. Always forget session keys after processing to prevent stale data.</p>
+				</div>
+				<div class="callout callout--warn">
+					<p><strong>IPN is server-to-server.</strong> Never redirect from an IPN handler. Always return a JSON response. SSLCommerz sends IPNs independently of the user's browser flow &mdash; use it as a safety net for payments that complete after the user navigates away.</p>
+				</div>
+				<div class="callout callout--info">
+					<p><strong>Duplicate prevention.</strong> SSLCommerz may call your success URL multiple times for the same transaction. Always check if the order is already marked as paid before creating records.</p>
+				</div>
+			</section>
+
+			<hr class="doc-divider">
+
+			<!-- Refunds -->
+			<section class="doc-section" id="refunds">
+				<h2><span class="section-icon">07</span>Refunds</h2>
+
+				<h3>Initiate a refund</h3>
+				<div class="method-sig"><pre><span class="fn">Sslcommerz::refundPayment</span>(
+    <span class="type">string</span> <span class="var">$bankTransactionId</span>,
+    <span class="type">int|float</span> <span class="var">$amount</span>,
+    <span class="type">string</span> <span class="var">$reason</span>
+): <span class="type">RefundResponse</span></pre></div>
+				<div class="code">
+					<div class="code-header"><span>Refund example</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+					<pre><span class="var">$refund</span> = <span class="fn">Sslcommerz</span>::<span class="fn">refundPayment</span>(
+    <span class="var">$order</span>->bank_tran_id,
+    <span class="var">$order</span>->total,
+    <span class="str">'Customer requested refund'</span>
+);
+
+<span class="kw">if</span> (<span class="var">$refund</span>-><span class="fn">success</span>()) {
+    <span class="var">$order</span>-><span class="fn">update</span>([<span class="str">'refund_ref_id'</span> => <span class="var">$refund</span>-><span class="fn">refundRefId</span>()]);
+} <span class="kw">elseif</span> (<span class="var">$refund</span>-><span class="fn">processing</span>()) {
+    <span class="cm">// Refund is being processed by the bank</span>
+} <span class="kw">elseif</span> (<span class="var">$refund</span>-><span class="fn">failed</span>()) {
+    Log::<span class="fn">error</span>(<span class="var">$refund</span>-><span class="fn">failedReason</span>());
+}</pre>
+				</div>
+
+				<h3>Check refund status</h3>
+				<div class="method-sig"><pre><span class="fn">Sslcommerz::checkRefundStatus</span>(<span class="type">string</span> <span class="var">$refundRefId</span>): <span class="type">RefundStatus</span></pre></div>
+				<div class="code">
+					<div class="code-header"><span>Status check</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+					<pre><span class="var">$status</span> = <span class="fn">Sslcommerz</span>::<span class="fn">checkRefundStatus</span>(<span class="var">$order</span>->refund_ref_id);
+
+<span class="kw">if</span> (<span class="var">$status</span>-><span class="fn">refunded</span>()) {
+    <span class="var">$order</span>-><span class="fn">update</span>([<span class="str">'status'</span> => <span class="str">'refunded'</span>, <span class="str">'refunded_at'</span> => <span class="var">$status</span>-><span class="fn">refundedAt</span>()]);
+} <span class="kw">elseif</span> (<span class="var">$status</span>-><span class="fn">cancelled</span>()) {
+    <span class="var">$order</span>-><span class="fn">update</span>([<span class="str">'status'</span> => <span class="str">'refund_failed'</span>]);
+} <span class="kw">elseif</span> (<span class="var">$status</span>-><span class="fn">processing</span>()) {
+    <span class="cm">// Still being processed by the bank</span>
+}</pre>
+				</div>
+			</section>
+
+			<hr class="doc-divider">
+
+			<!-- API Reference -->
+			<section class="doc-section" id="api-reference">
+				<h2><span class="section-icon">08</span>API Reference</h2>
+
+				<h3>Minimal payment</h3>
+				<p>Only <code>setOrder</code> and <code>setCustomer</code> are required. Everything else is optional.</p>
+				<div class="code">
+					<div class="code-header"><span>Minimal example</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+					<pre><span class="var">$response</span> = <span class="fn">Sslcommerz</span>::<span class="fn">setOrder</span>(<span class="var">$amount</span>, <span class="var">$invoiceId</span>, <span class="str">'Premium Plan'</span>)
+    -><span class="fn">setCustomer</span>(<span class="var">$user</span>->name, <span class="var">$user</span>->email)
+    -><span class="fn">makePayment</span>();
+
+<span class="kw">if</span> (<span class="var">$response</span>-><span class="fn">success</span>()) {
+    <span class="kw">return</span> <span class="fn">redirect</span>(<span class="var">$response</span>-><span class="fn">gatewayPageURL</span>());
+}
+
+<span class="cm">// Handle failure</span>
+Log::<span class="fn">error</span>(<span class="var">$response</span>-><span class="fn">failedReason</span>());</pre>
+				</div>
+
+				<h3>Full chain with all options</h3>
+				<p>Every method returns <code>SslcommerzClient</code> for chaining. Add shipping, gateway restrictions, custom fields, or override the callback URLs.</p>
+				<div class="code">
+					<div class="code-header"><span>Full example</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+					<pre><span class="var">$response</span> = <span class="fn">Sslcommerz</span>::<span class="fn">setOrder</span>(<span class="var">$amount</span>, <span class="var">$invoiceId</span>, <span class="str">'Wireless Headphones'</span>, <span class="str">'Electronics'</span>)
+    -><span class="fn">setCustomer</span>(
+        <span class="var">$user</span>->name,
+        <span class="var">$user</span>->email,
+        <span class="str">'01700000000'</span>,
+        <span class="str">'123 Mirpur Road'</span>, <span class="str">'Dhaka'</span>, <span class="str">'Dhaka'</span>, <span class="str">'1216'</span>
+    )
+    -><span class="fn">setShippingInfo</span>(<span class="val">2</span>, <span class="str">'456 Gulshan Ave'</span>, <span class="var">$user</span>->name, <span class="str">'Dhaka'</span>)
+    -><span class="fn">setGateways</span>([<span class="str">'visa'</span>, <span class="str">'mastercard'</span>, <span class="str">'bkash'</span>])
+    -><span class="fn">setProductProfile</span>(<span class="str">'physical-goods'</span>)
+    -><span class="fn">makePayment</span>([
+        <span class="str">'value_a'</span> => <span class="var">$order</span>->id,      <span class="cm">// passes through to SSLCommerz</span>
+        <span class="str">'value_b'</span> => <span class="str">'customer_ref_'</span> . <span class="var">$user</span>->id,
+    ]);</pre>
+				</div>
+				<div class="callout callout--info">
+					<p><strong>Custom fields via makePayment():</strong> The array passed to <code>makePayment()</code> is merged into the SSLCommerz request payload. Use <code>value_a</code> through <code>value_f</code> to pass your own identifiers — they come back unchanged in the callback and IPN, making reconciliation easy.</p>
+				</div>
+
+				<h3>Method signatures</h3>
+				<div class="method-sig"><pre><span class="fn">Sslcommerz::setOrder</span>(
+    <span class="type">int|float</span> <span class="var">$amount</span>,
+    <span class="type">string</span> <span class="var">$invoiceId</span>,
+    <span class="type">string</span> <span class="var">$productName</span>,
+    <span class="type">string</span> <span class="var">$productCategory</span> = <span class="str">' '</span>
+): <span class="type">SslcommerzClient</span>
+
+<span class="fn">Sslcommerz::setCustomer</span>(
+    <span class="type">string</span> <span class="var">$name</span>,
+    <span class="type">string</span> <span class="var">$email</span>,
+    <span class="type">string</span> <span class="var">$phone</span> = <span class="str">' '</span>,
+    <span class="type">string</span> <span class="var">$address</span> = <span class="str">' '</span>,
+    <span class="type">string</span> <span class="var">$city</span> = <span class="str">' '</span>,
+    <span class="type">string</span> <span class="var">$state</span> = <span class="str">' '</span>,
+    <span class="type">string</span> <span class="var">$postal</span> = <span class="str">' '</span>,
+    <span class="type">string</span> <span class="var">$country</span> = <span class="str">'Bangladesh'</span>,
+    <span class="type">?string</span> <span class="var">$fax</span> = <span class="kw">null</span>
+): <span class="type">SslcommerzClient</span>
+
+<span class="fn">Sslcommerz::setShippingInfo</span>(
+    <span class="type">int</span> <span class="var">$quantity</span>,
+    <span class="type">string</span> <span class="var">$address</span>,
+    <span class="type">?string</span> <span class="var">$name</span> = <span class="kw">null</span>,
+    <span class="type">?string</span> <span class="var">$city</span> = <span class="kw">null</span>,
+    <span class="type">?string</span> <span class="var">$state</span> = <span class="kw">null</span>,
+    <span class="type">?string</span> <span class="var">$postal</span> = <span class="kw">null</span>,
+    <span class="type">?string</span> <span class="var">$country</span> = <span class="kw">null</span>
+): <span class="type">SslcommerzClient</span></pre></div>
+
+				<h3>Optional chainable methods</h3>
+				<table class="doc-table">
+					<thead><tr><th>Method</th><th>Description</th></tr></thead>
+					<tbody>
+						<tr><td>setCallbackUrls($success, $failure, $cancel, $ipn)</td><td>Override auto-generated callback URLs</td></tr>
+						<tr><td>setGateways(array $gateways)</td><td>Restrict to specific gateways, e.g. <code>['visa', 'mastercard']</code></td></tr>
+						<tr><td>setProductProfile(string $profile)</td><td>Set product profile type</td></tr>
+					</tbody>
+				</table>
+
+				<h3>Validation and verification</h3>
+				<div class="method-sig"><pre><span class="fn">makePayment</span>(<span class="type">array</span> <span class="var">$additionalData</span> = []): <span class="type">PaymentResponse</span>
+
+<span class="fn">validatePayment</span>(
+    <span class="type">array</span> <span class="var">$payload</span>,
+    <span class="type">string</span> <span class="var">$transactionId</span>,
+    <span class="type">int|float</span> <span class="var">$amount</span>,
+    <span class="type">string</span> <span class="var">$currency</span> = <span class="str">'BDT'</span>
+): <span class="type">bool</span>
+
+<span class="fn">verifyHash</span>(<span class="type">array</span> <span class="var">$data</span>): <span class="type">bool</span></pre></div>
+			</section>
+
+			<!-- Response Objects -->
+			<section class="doc-section" id="response-objects">
+				<h2><span class="section-icon">09</span>Response Objects</h2>
+				<p>The package returns typed response objects instead of raw arrays. Each object provides semantic methods for inspecting the result.</p>
+
+				<h3>PaymentResponse</h3>
+				<table class="doc-table">
+					<thead><tr><th>Method</th><th>Return</th><th>Description</th></tr></thead>
+					<tbody>
+						<tr><td>success()</td><td>bool</td><td>Payment was initiated successfully</td></tr>
+						<tr><td>failed()</td><td>bool</td><td>Payment initiation failed</td></tr>
+						<tr><td>failedReason()</td><td>string|null</td><td>Failure reason message</td></tr>
+						<tr><td>status()</td><td>string|null</td><td>Raw status value from gateway</td></tr>
+						<tr><td>sessionKey()</td><td>string|null</td><td>Payment session key</td></tr>
+						<tr><td>gatewayPageURL()</td><td>string|null</td><td>Redirect customer to this URL</td></tr>
+						<tr><td>redirectGatewayURL()</td><td>string|null</td><td>Alternative redirect URL</td></tr>
+						<tr><td>gatewayList()</td><td>array|null</td><td>Available payment gateways</td></tr>
+						<tr><td>toArray()</td><td>array|null</td><td>Raw response data</td></tr>
+					</tbody>
+				</table>
+
+				<h3>RefundResponse</h3>
+				<table class="doc-table">
+					<thead><tr><th>Method</th><th>Return</th><th>Description</th></tr></thead>
+					<tbody>
+						<tr><td>success()</td><td>bool</td><td>Refund initiated successfully</td></tr>
+						<tr><td>processing()</td><td>bool</td><td>Refund is being processed</td></tr>
+						<tr><td>failed()</td><td>bool</td><td>Refund failed</td></tr>
+						<tr><td>failedReason()</td><td>string|null</td><td>Failure reason</td></tr>
+						<tr><td>bankTranId()</td><td>string|null</td><td>Bank transaction ID</td></tr>
+						<tr><td>transId()</td><td>string|null</td><td>SSLCommerz transaction ID</td></tr>
+						<tr><td>refundRefId()</td><td>string|null</td><td>Use this to check refund status later</td></tr>
+						<tr><td>toArray()</td><td>array|null</td><td>Raw response data</td></tr>
+					</tbody>
+				</table>
+
+				<h3>RefundStatus</h3>
+				<table class="doc-table">
+					<thead><tr><th>Method</th><th>Return</th><th>Description</th></tr></thead>
+					<tbody>
+						<tr><td>refunded()</td><td>bool</td><td>Refund completed</td></tr>
+						<tr><td>processing()</td><td>bool</td><td>Refund in progress</td></tr>
+						<tr><td>cancelled()</td><td>bool</td><td>Refund was cancelled</td></tr>
+						<tr><td>reason()</td><td>string|null</td><td>Cancellation or failure reason</td></tr>
+						<tr><td>initiatedAt()</td><td>string|null</td><td>Refund initiation datetime</td></tr>
+						<tr><td>refundedAt()</td><td>string|null</td><td>Refund completion datetime</td></tr>
+						<tr><td>toArray()</td><td>array|null</td><td>Raw response data</td></tr>
+					</tbody>
+				</table>
+			</section>
+		</div>
+	</div>
+
+	<!-- Mobile sidebar toggle -->
+	<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">&#9776;</button>
+
+	<script>
+		// Sidebar toggle (mobile)
+		const sidebar = document.getElementById('sidebar');
+		const toggle = document.getElementById('sidebarToggle');
+		toggle.addEventListener('click', () => {
+			sidebar.classList.toggle('open');
+		});
+
+		// Active sidebar link tracking
+		const sections = document.querySelectorAll('.doc-section[id]');
+		const links = document.querySelectorAll('.sidebar-link');
+
+		const setActiveLink = () => {
+			let current = null;
+			sections.forEach(section => {
+				const rect = section.getBoundingClientRect();
+				if (rect.top <= 120) {
+					current = section;
+				}
+			});
+			links.forEach(link => link.classList.remove('active'));
+			if (current) {
+				const activeLink = document.querySelector(`.sidebar-link[href="#${current.id}"]`);
+				if (activeLink) activeLink.classList.add('active');
+			}
+		};
+
+		// Use IntersectionObserver to trigger updates efficiently
+		const observer = new IntersectionObserver(setActiveLink, {
+			threshold: [0, 0.1, 0.25],
+			rootMargin: '-80px 0px -50% 0px',
+		});
+		sections.forEach(section => observer.observe(section));
+
+		// Close sidebar on link click (mobile)
+		links.forEach(link => {
+			link.addEventListener('click', () => {
+				if (window.innerWidth <= 900) {
+					sidebar.classList.remove('open');
+				}
+			});
+		});
+
+		// Copy to clipboard
+		function copyCode(btn) {
+			const pre = btn.closest('.code').querySelector('pre');
+			const text = pre.textContent;
+			navigator.clipboard.writeText(text).then(() => {
+				btn.textContent = 'Copied';
+				btn.classList.add('copied');
+				setTimeout(() => {
+					btn.textContent = 'Copy';
+					btn.classList.remove('copied');
+				}, 2000);
+			});
+		}
+	</script>
+</body>
+</html>

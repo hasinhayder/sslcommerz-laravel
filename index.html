@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SSLCommerz Laravel — Payment Gateway Integration</title>
+	<meta name="description" content="A modern Laravel package for SSLCommerz payments, validation, refunds, and hash verification.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg: #070b14;
+			--bg-raised: #0c1220;
+			--surface: #111a2e;
+			--surface-glass: rgba(14, 23, 44, 0.65);
+			--line: rgba(255,255,255,0.07);
+			--line-strong: rgba(255,255,255,0.12);
+			--text: #e8eef8;
+			--text-dim: #94a3be;
+			--accent: #00d4aa;
+			--accent-glow: rgba(0, 212, 170, 0.15);
+			--accent-2: #f0a030;
+			--accent-2-glow: rgba(240, 160, 48, 0.12);
+			--danger: #f06070;
+			--radius: 20px;
+			--radius-sm: 12px;
+			--radius-xs: 8px;
+			--font-display: 'Inter', sans-serif;
+			--font-body: 'DM Sans', sans-serif;
+			--font-mono: 'Fira Code', monospace;
+		}
+
+		*, *::before, *::after { box-sizing: border-box; margin: 0; }
+		html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+		body {
+			font-family: var(--font-body);
+			color: var(--text);
+			background: var(--bg);
+			min-height: 100vh;
+			overflow-x: hidden;
+			line-height: 1.6;
+		}
+
+		/* ── Ambient background ── */
+		.ambient {
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			z-index: 0;
+			overflow: hidden;
+		}
+		.ambient-orb {
+			position: absolute;
+			border-radius: 50%;
+			filter: blur(120px);
+			opacity: 0.4;
+		}
+		.ambient-orb--1 {
+			width: 600px; height: 600px;
+			top: -15%; left: -10%;
+			background: radial-gradient(circle, rgba(0,212,170,0.3), transparent 70%);
+			animation: orbDrift1 20s ease-in-out infinite alternate;
+		}
+		.ambient-orb--2 {
+			width: 500px; height: 500px;
+			top: 30%; right: -12%;
+			background: radial-gradient(circle, rgba(240,160,48,0.2), transparent 70%);
+			animation: orbDrift2 25s ease-in-out infinite alternate;
+		}
+		.ambient-orb--3 {
+			width: 450px; height: 450px;
+			bottom: -10%; left: 30%;
+			background: radial-gradient(circle, rgba(0,180,220,0.2), transparent 70%);
+			animation: orbDrift3 22s ease-in-out infinite alternate;
+		}
+
+		@keyframes orbDrift1 { to { transform: translate(80px, 60px) scale(1.15); } }
+		@keyframes orbDrift2 { to { transform: translate(-60px, -80px) scale(0.9); } }
+		@keyframes orbDrift3 { to { transform: translate(50px, -40px) scale(1.1); } }
+
+		/* Grid overlay */
+		.grid-overlay {
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			z-index: 0;
+			background-image:
+				linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+			background-size: 64px 64px;
+			mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent);
+		}
+
+		/* Noise texture */
+		.noise {
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			z-index: 0;
+			opacity: 0.028;
+			background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+			background-size: 200px 200px;
+		}
+
+		a { color: inherit; text-decoration: none; }
+
+		/* ── Layout ── */
+		.container {
+			position: relative;
+			z-index: 1;
+			width: min(1200px, calc(100% - 40px));
+			margin: 0 auto;
+		}
+
+		/* ── Navigation ── */
+		.navbar {
+			position: sticky;
+			top: 20px;
+			z-index: 100;
+			margin-top: 20px;
+			animation: fadeSlideDown 0.8s ease both;
+		}
+		.navbar-inner {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 16px;
+			padding: 14px 24px;
+			border-radius: 999px;
+			border: 1px solid var(--line);
+			background: rgba(7,11,20,0.78);
+			backdrop-filter: blur(24px) saturate(1.4);
+			box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+		}
+		.nav-brand {
+			display: flex;
+			align-items: center;
+			gap: 11px;
+			font-family: var(--font-display);
+			font-weight: 700;
+			font-size: 1.05rem;
+			letter-spacing: -0.02em;
+		}
+		.nav-brand-icon {
+			width: 36px; height: 36px;
+			border-radius: 10px;
+			display: grid;
+			place-items: center;
+			background: linear-gradient(135deg, var(--accent), #00b4dc);
+			color: var(--bg);
+			font-family: var(--font-display);
+			font-weight: 800;
+			font-size: 0.9rem;
+		}
+		.nav-links {
+			display: flex;
+			align-items: center;
+			gap: 28px;
+		}
+		.nav-links a {
+			font-size: 0.92rem;
+			color: var(--text-dim);
+			font-weight: 500;
+			transition: color 0.2s;
+			position: relative;
+		}
+		.nav-links a::after {
+			content: '';
+			position: absolute;
+			bottom: -4px;
+			left: 0;
+			width: 0;
+			height: 2px;
+			background: var(--accent);
+			border-radius: 1px;
+			transition: width 0.25s ease;
+		}
+		.nav-links a:hover { color: var(--text); }
+		.nav-links a:hover::after { width: 100%; }
+
+		.nav-actions {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		/* ── Buttons ── */
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 10px 20px;
+			border-radius: 999px;
+			font-family: var(--font-body);
+			font-weight: 600;
+			font-size: 0.9rem;
+			border: 1px solid transparent;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			white-space: nowrap;
+		}
+		.btn:hover { transform: translateY(-1px); }
+		.btn:active { transform: translateY(0); }
+
+		.btn-primary {
+			background: var(--accent);
+			color: var(--bg);
+			box-shadow: 0 4px 20px rgba(0,212,170,0.25);
+		}
+		.btn-primary:hover { box-shadow: 0 6px 28px rgba(0,212,170,0.35); }
+
+		.btn-ghost {
+			background: transparent;
+			border-color: var(--line-strong);
+			color: var(--text);
+		}
+		.btn-ghost:hover {
+			background: rgba(255,255,255,0.04);
+			border-color: rgba(255,255,255,0.2);
+		}
+
+		/* ── Hero ── */
+	.hero {
+			min-height: auto;
+			padding: 100px 0 60px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+		.hero-grid {
+			display: grid;
+			grid-template-columns: 1.15fr 0.85fr;
+			gap: 48px;
+			align-items: center;
+			flex: 1;
+		}
+
+		.hero-badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 6px 14px 6px 8px;
+			border-radius: 999px;
+			background: var(--accent-glow);
+			border: 1px solid rgba(0,212,170,0.2);
+			font-size: 0.82rem;
+			font-weight: 600;
+			color: #80ffe0;
+			margin-bottom: 28px;
+			animation: fadeSlideUp 0.8s 0.15s ease both;
+		}
+		.hero-badge-dot {
+			width: 22px; height: 22px;
+			border-radius: 50%;
+			background: var(--accent);
+			display: grid;
+			place-items: center;
+			font-size: 0.65rem;
+			color: var(--bg);
+			font-weight: 800;
+		}
+
+		.hero h1 {
+			font-family: var(--font-display);
+			font-size: clamp(2.8rem, 5.5vw, 4.2rem);
+			font-weight: 800;
+			line-height: 1.06;
+			letter-spacing: -0.04em;
+			max-width: 12ch;
+			animation: fadeSlideUp 0.8s 0.25s ease both;
+		}
+		.hero-gradient {
+			background: linear-gradient(135deg, #ffffff 0%, #80ffe0 40%, #00d4aa 70%, #00b4dc 100%);
+			-webkit-background-clip: text;
+			background-clip: text;
+			color: transparent;
+		}
+
+		.hero-desc {
+			margin-top: 22px;
+			max-width: 50ch;
+			color: var(--text-dim);
+			font-size: 1.08rem;
+			line-height: 1.75;
+			animation: fadeSlideUp 0.8s 0.35s ease both;
+		}
+
+		.hero-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			margin-top: 32px;
+			animation: fadeSlideUp 0.8s 0.45s ease both;
+		}
+		.hero-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			margin-top: 28px;
+			animation: fadeSlideUp 0.8s 0.55s ease both;
+		}
+		.hero-tag {
+			display: inline-flex;
+			align-items: center;
+			gap: 7px;
+			padding: 8px 14px;
+			border-radius: 999px;
+			background: rgba(255,255,255,0.03);
+			border: 1px solid var(--line);
+			font-size: 0.84rem;
+			color: var(--text-dim);
+		}
+		.hero-tag-dot {
+			width: 6px; height: 6px;
+			border-radius: 50%;
+		}
+
+		/* ── Hero Visual: API Chain Card ── */
+		.hero-visual {
+			animation: fadeSlideUp 0.9s 0.3s ease both;
+		}
+		.chain-card {
+			position: relative;
+			border-radius: var(--radius);
+			background: linear-gradient(180deg, rgba(14,22,42,0.92), rgba(10,16,32,0.95));
+			border: 1px solid var(--line);
+			box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+			overflow: hidden;
+		}
+		.chain-card::before {
+			content: '';
+			position: absolute;
+			top: -60px; right: -40px;
+			width: 200px; height: 200px;
+			border-radius: 50%;
+			background: radial-gradient(circle, rgba(0,212,170,0.18), transparent 70%);
+			filter: blur(30px);
+		}
+
+		.chain-card-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 16px 20px;
+			border-bottom: 1px solid var(--line);
+		}
+		.chain-card-head-label {
+			font-size: 0.8rem;
+			color: var(--text-dim);
+			font-family: var(--font-mono);
+		}
+		.chain-card-head-badge {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			padding: 4px 10px;
+			border-radius: 999px;
+			background: rgba(0,212,170,0.08);
+			border: 1px solid rgba(0,212,170,0.2);
+			font-size: 0.72rem;
+			font-weight: 600;
+			color: var(--accent);
+		}
+		.chain-card-head-badge-dot {
+			width: 6px; height: 6px;
+			border-radius: 50%;
+			background: var(--accent);
+			animation: pulseDot 2s ease-in-out infinite;
+		}
+		@keyframes pulseDot {
+			0%, 100% { opacity: 1; }
+			50% { opacity: 0.4; }
+		}
+
+		.chain-card-body {
+			padding: 24px;
+			display: flex;
+			flex-direction: column;
+			gap: 0;
+		}
+
+		.chain-step {
+			display: grid;
+			grid-template-columns: auto 1fr auto;
+			gap: 0 14px;
+			align-items: center;
+			position: relative;
+		}
+		.chain-step:not(:last-child) {
+			padding-bottom: 22px;
+		}
+
+		.chain-step:not(:last-child)::after {
+			content: '';
+			position: absolute;
+			left: 15px;
+			top: 42px;
+			bottom: 0;
+			width: 2px;
+			background: var(--line-strong);
+			}
+
+		.chain-step-icon {
+			width: 32px; height: 32px;
+			border-radius: 10px;
+			display: grid;
+			place-items: center;
+			flex-shrink: 0;
+			border: 1px solid;
+		}
+		.chain-step-icon svg {
+			width: 15px; height: 15px;
+		}
+		.chain-step-icon--green {
+			background: rgba(0,212,170,0.08);
+			border-color: rgba(0,212,170,0.18);
+			color: var(--accent);
+		}
+		.chain-step-icon--amber {
+			background: rgba(240,160,48,0.08);
+			border-color: rgba(240,160,48,0.18);
+			color: var(--accent-2);
+		}
+		.chain-step-icon--blue {
+			background: rgba(0,180,220,0.08);
+			border-color: rgba(0,180,220,0.18);
+			color: #5ec4e0;
+		}
+
+		.chain-step-text {
+			min-width: 0;
+		}
+		.chain-step-method {
+			font-family: var(--font-mono);
+			font-size: 0.82rem;
+			font-weight: 600;
+			color: var(--text);
+				}
+		.chain-step-desc {
+			font-size: 0.78rem;
+			color: var(--text-dim);
+			margin-top: 2px;
+		}
+		.chain-step-args {
+			font-family: var(--font-mono);
+			font-size: 0.72rem;
+			color: rgba(148,163,190,0.7);
+			text-align: right;
+				}
+
+		.chain-card-foot {
+			margin-top: 20px;
+			padding: 16px 20px;
+			border-top: 1px solid var(--line);
+			border-radius: var(--radius-sm);
+			background: rgba(0,212,170,0.04);
+			border: 1px solid rgba(0,212,170,0.12);
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+		.chain-card-foot-label {
+			font-family: var(--font-mono);
+			font-size: 0.76rem;
+			font-weight: 600;
+			color: var(--accent);
+		}
+		.chain-card-foot-return {
+			font-family: var(--font-mono);
+			font-size: 0.72rem;
+			color: var(--text-dim);
+		}
+
+		/* ── Sections ── */
+		.section {
+			padding: 80px 0;
+		}
+		.section-label {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			font-family: var(--font-mono);
+			font-size: 0.78rem;
+			font-weight: 600;
+			color: var(--accent);
+			text-transform: uppercase;
+			letter-spacing: 0.1em;
+			margin-bottom: 14px;
+		}
+		.section-label::before {
+			content: '';
+			width: 20px; height: 1px;
+			background: var(--accent);
+		}
+		.section-heading {
+			font-family: var(--font-display);
+			font-size: clamp(2rem, 3.5vw, 2.8rem);
+			font-weight: 700;
+			letter-spacing: -0.04em;
+			line-height: 1.15;
+			margin-bottom: 14px;
+		}
+		.section-desc {
+			max-width: 54ch;
+			color: var(--text-dim);
+			font-size: 1.02rem;
+			line-height: 1.75;
+		}
+
+		/* ── Feature cards ── */
+		.features-grid {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 18px;
+			margin-top: 36px;
+		}
+		.feature-card {
+			padding: 28px;
+			border-radius: var(--radius);
+			background: var(--surface-glass);
+			border: 1px solid var(--line);
+			backdrop-filter: blur(12px);
+			transition: all 0.3s ease;
+			position: relative;
+			overflow: hidden;
+		}
+		.feature-card::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(180deg, rgba(255,255,255,0.04), transparent 50%);
+			pointer-events: none;
+		}
+		.feature-card:hover {
+			border-color: rgba(255,255,255,0.14);
+			transform: translateY(-4px);
+			box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+		}
+		.feature-icon {
+			width: 48px; height: 48px;
+			border-radius: 14px;
+			display: grid;
+			place-items: center;
+			margin-bottom: 18px;
+			font-size: 1.2rem;
+			border: 1px solid;
+		}
+		.feature-icon--green {
+			background: rgba(0,212,170,0.1);
+			border-color: rgba(0,212,170,0.2);
+			color: var(--accent);
+		}
+		.feature-icon--amber {
+			background: rgba(240,160,48,0.1);
+			border-color: rgba(240,160,48,0.2);
+			color: var(--accent-2);
+		}
+		.feature-icon--red {
+			background: rgba(240,96,112,0.1);
+			border-color: rgba(240,96,112,0.2);
+			color: var(--danger);
+		}
+
+		.feature-card h3 {
+			font-family: var(--font-display);
+			font-size: 1.12rem;
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			margin-bottom: 8px;
+		}
+		.feature-card p {
+			color: var(--text-dim);
+			font-size: 0.92rem;
+			line-height: 1.7;
+		}
+		.feature-pills {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			margin-top: 16px;
+		}
+		.feature-pill {
+			padding: 5px 11px;
+			border-radius: 999px;
+			background: rgba(255,255,255,0.04);
+			border: 1px solid var(--line);
+			font-family: var(--font-mono);
+			font-size: 0.76rem;
+			color: #b0c4e0;
+		}
+
+		/* ── Responsive ── */
+		@media (max-width: 1024px) {
+			.hero-grid, .install-grid {
+				grid-template-columns: 1fr;
+			}
+			.features-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+			.nav-links { display: none; }
+			.navbar-inner { padding: 12px 18px; }
+		}
+
+		/* ── Install ── */
+		.install-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 18px;
+			margin-top: 36px;
+		}
+		.terminal-card {
+			padding: 24px;
+			border-radius: var(--radius);
+			background: #060c18;
+			border: 1px solid var(--line);
+			box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+			overflow: hidden;
+		}
+		.terminal-prompt {
+			font-family: var(--font-mono);
+			font-size: 0.78rem;
+			color: var(--accent);
+			font-weight: 600;
+			margin-bottom: 14px;
+			letter-spacing: 0.04em;
+		}
+		.terminal-card pre {
+			font-family: var(--font-mono);
+			font-size: 0.88rem;
+			line-height: 1.9;
+			color: #d0e0f0;
+			margin: 0;
+			white-space: pre-wrap;
+		}
+		.terminal-card .cm { color: #4a6070; }
+		.terminal-card .cmd { color: #ffffff; }
+		.terminal-card .val { color: #f0c878; }
+
+		/* ── CTA section ── */
+		.cta-section {
+			padding: 60px 0 100px;
+		}
+		.cta-card {
+			position: relative;
+			padding: 48px;
+			border-radius: 28px;
+			background:
+				radial-gradient(circle at 85% 20%, rgba(0,212,170,0.14), transparent 40%),
+				radial-gradient(circle at 15% 80%, rgba(240,160,48,0.08), transparent 35%),
+				linear-gradient(135deg, var(--bg-raised), rgba(10,16,30,0.98));
+			border: 1px solid var(--line);
+			box-shadow: 0 40px 100px rgba(0,0,0,0.35);
+			overflow: hidden;
+		}
+		.cta-card h2 {
+			font-family: var(--font-display);
+			font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+			font-weight: 800;
+			letter-spacing: -0.04em;
+			max-width: 18ch;
+		}
+		.cta-card p {
+			margin-top: 16px;
+			max-width: 58ch;
+			color: var(--text-dim);
+			font-size: 1.02rem;
+			line-height: 1.75;
+		}
+		.cta-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			margin-top: 28px;
+		}
+		.cta-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			margin-top: 20px;
+		}
+		.cta-tag {
+			padding: 7px 14px;
+			border-radius: 999px;
+			background: rgba(255,255,255,0.03);
+			border: 1px solid var(--line);
+			font-size: 0.82rem;
+			color: var(--text-dim);
+		}
+
+		/* ── Footer ── */
+		.site-footer {
+			padding: 0 0 40px;
+		}
+		.footer-inner {
+			display: grid;
+			grid-template-columns: 1fr auto;
+			gap: 24px;
+			padding: 20px 24px;
+			border-radius: var(--radius);
+			background: rgba(7,11,20,0.7);
+			border: 1px solid var(--line);
+			backdrop-filter: blur(16px);
+			align-items: center;
+		}
+		.footer-brand {
+			font-family: var(--font-display);
+			font-weight: 700;
+			font-size: 0.95rem;
+			margin-bottom: 4px;
+		}
+		.footer-tagline {
+			color: var(--text-dim);
+			font-size: 0.86rem;
+		}
+		.footer-links {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 16px;
+			font-size: 0.88rem;
+			color: var(--text-dim);
+		}
+		.footer-links a { transition: color 0.2s; }
+		.footer-links a:hover { color: var(--text); }
+
+		/* ── Animations ── */
+		@keyframes fadeSlideUp {
+			from { opacity: 0; transform: translateY(20px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		@keyframes fadeSlideDown {
+			from { opacity: 0; transform: translateY(-16px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.reveal {
+			opacity: 0;
+			transform: translateY(24px);
+			transition: opacity 0.7s ease, transform 0.7s ease;
+		}
+		.reveal.visible {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		/* ── Responsive ── */
+	@media (max-width: 720px) {
+			.container { width: calc(100% - 20px); }
+			.hero { padding-top: 100px; }
+			h1 { max-width: 100% !important; }
+			.features-grid { grid-template-columns: 1fr; }
+			.footer-inner { grid-template-columns: 1fr; }
+			.section { padding: 56px 0; }
+			.chain-card-body { padding: 20px; }
+		}
+	</style>
+</head>
+<body>
+	<!-- Ambient background -->
+	<div class="ambient" aria-hidden="true">
+		<div class="ambient-orb ambient-orb--1"></div>
+		<div class="ambient-orb ambient-orb--2"></div>
+		<div class="ambient-orb ambient-orb--3"></div>
+	</div>
+	<div class="grid-overlay" aria-hidden="true"></div>
+	<div class="noise" aria-hidden="true"></div>
+
+	<!-- Navigation -->
+	<div class="navbar container">
+		<nav class="navbar-inner" aria-label="Primary">
+			<a class="nav-brand" href="#top">
+				<span class="nav-brand-icon">S</span>
+				<span>SSLCommerz Laravel</span>
+			</a>
+			<div class="nav-links">
+				<a href="#features">Features</a>
+				<a href="#install">Install</a>
+				<a href="docs.html">Docs</a>
+			</div>
+			<div class="nav-actions">
+				<a class="btn btn-ghost" href="https://github.com/hasinhayder/sslcommerz-laravel" target="_blank" rel="noreferrer">GitHub</a>
+				<a class="btn btn-primary" href="#install">Get Started</a>
+			</div>
+		</nav>
+	</div>
+
+	<main id="top">
+		<!-- Hero -->
+		<section class="hero container">
+			<div class="hero-grid">
+				<div>
+					<div class="hero-badge">
+						<span class="hero-badge-dot">v</span>
+						1.1.1 stable
+					</div>
+					<h1><span class="hero-gradient">Payment infrastructure</span> for Laravel teams.</h1>
+					<p class="hero-desc">
+						A fluent API for initiating SSLCommerz payments, validating transactions,
+						handling refunds, and verifying hashes — built for sandbox and live environments.
+					</p>
+					<div class="hero-actions">
+						<a class="btn btn-primary" href="#install">Install Package</a>
+						<a class="btn btn-ghost" href="docs.html">Read Docs</a>
+					</div>
+					<div class="hero-tags">
+						<span class="hero-tag"><span class="hero-tag-dot" style="background:var(--accent)"></span>PHP 8.2+</span>
+						<span class="hero-tag"><span class="hero-tag-dot" style="background:var(--accent-2)"></span>Laravel 10 – 13</span>
+						<span class="hero-tag"><span class="hero-tag-dot" style="background:var(--danger)"></span>Sandbox + Live</span>
+					</div>
+				</div>
+
+				<div class="hero-visual">
+					<div class="chain-card">
+						<div class="chain-card-head">
+							<span class="chain-card-head-label">fluent API chain</span>
+							<span class="chain-card-head-badge"><span class="chain-card-head-badge-dot"></span>5 methods</span>
+						</div>
+						<div class="chain-card-body">
+							<div class="chain-step">
+								<div class="chain-step-icon chain-step-icon--green">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+								</div>
+								<div class="chain-step-text">
+									<div class="chain-step-method">->setOrder()</div>
+									<div class="chain-step-desc">Amount, invoice, product name</div>
+								</div>
+								<span class="chain-step-args">$amount, $id, $name</span>
+							</div>
+							<div class="chain-step">
+								<div class="chain-step-icon chain-step-icon--green">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+								</div>
+								<div class="chain-step-text">
+									<div class="chain-step-method">->setCustomer()</div>
+									<div class="chain-step-desc">Name, email, phone, address</div>
+								</div>
+								<span class="chain-step-args">$name, $email, $phone</span>
+							</div>
+							<div class="chain-step">
+								<div class="chain-step-icon chain-step-icon--blue">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="22" height="18" rx="2"/><path d="M1 9h22"/><path d="M16 2l4 4-4 4"/></svg>
+								</div>
+								<div class="chain-step-text">
+									<div class="chain-step-method">->setShippingInfo()</div>
+									<div class="chain-step-desc">Quantity, address</div>
+								</div>
+								<span class="chain-step-args">$qty, $address</span>
+							</div>
+							<div class="chain-step">
+								<div class="chain-step-icon chain-step-icon--amber">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+								</div>
+								<div class="chain-step-text">
+									<div class="chain-step-method">->makePayment()</div>
+									<div class="chain-step-desc">Execute, get response</div>
+								</div>
+								<span class="chain-step-args">PaymentResponse</span>
+							</div>
+							<div class="chain-step">
+								<div class="chain-step-icon chain-step-icon--amber">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+								</div>
+								<div class="chain-step-text">
+									<div class="chain-step-method">->gatewayPageURL()</div>
+									<div class="chain-step-desc">Redirect customer</div>
+								</div>
+								<span class="chain-step-args">string</span>
+							</div>
+						</div>
+						<div class="chain-card-foot">
+							<span class="chain-card-foot-label">returns</span>
+							<span class="chain-card-foot-return">PaymentResponse { success, status, gatewayPageURL, ... }</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Features -->
+		<section id="features" class="section container">
+			<div class="reveal">
+				<div class="section-label">Features</div>
+				<h2 class="section-heading">Everything for a reliable<br>payment integration.</h2>
+				<p class="section-desc">A focused API surface with clean data objects, covering the full payment lifecycle that production teams need.</p>
+			</div>
+			<div class="features-grid reveal">
+				<article class="feature-card">
+					<div class="feature-icon feature-icon--green">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+					</div>
+					<h3>Initiate Payments</h3>
+					<p>Fluent chain for order, customer, shipping, callbacks, and gateway selection. Returns a typed response object.</p>
+					<div class="feature-pills">
+						<span class="feature-pill">setOrder</span>
+						<span class="feature-pill">setCustomer</span>
+						<span class="feature-pill">setShippingInfo</span>
+						<span class="feature-pill">makePayment</span>
+					</div>
+				</article>
+				<article class="feature-card">
+					<div class="feature-icon feature-icon--amber">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+					</div>
+					<h3>Validate Transactions</h3>
+					<p>Verify hash signatures and validate payment responses before marking orders as paid. Prevents tampering.</p>
+					<div class="feature-pills">
+						<span class="feature-pill">validatePayment</span>
+						<span class="feature-pill">verifyHash</span>
+					</div>
+				</article>
+				<article class="feature-card">
+					<div class="feature-icon feature-icon--red">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+					</div>
+					<h3>Refund with Confidence</h3>
+					<p>Initiate refunds and poll their status through dedicated response objects. Success, processing, and failure are explicit.</p>
+					<div class="feature-pills">
+						<span class="feature-pill">refundPayment</span>
+						<span class="feature-pill">checkRefundStatus</span>
+					</div>
+				</article>
+			</div>
+		</section>
+
+		<!-- Install -->
+		<section id="install" class="section container">
+			<div class="reveal">
+				<div class="section-label">Install</div>
+				<h2 class="section-heading">Running in minutes.</h2>
+				<p class="section-desc">Install the package, publish configuration, set your SSLCommerz store credentials, and define callback routes.</p>
+			</div>
+			<div class="install-grid reveal">
+				<div class="terminal-card">
+					<div class="terminal-prompt">terminal</div>
+					<pre><span class="cm"># Install the package</span>
+<span class="cmd">composer require hasinhayder/sslcommerz-laravel</span>
+
+<span class="cm"># Publish configuration</span>
+<span class="cmd">php artisan sslcommerz-laravel:install</span></pre>
+				</div>
+				<div class="terminal-card">
+					<div class="terminal-prompt">.env</div>
+					<pre><span class="cm"># Environment</span>
+<span class="cmd">SSLC_SANDBOX=</span><span class="val">true</span>
+<span class="cmd">SSLC_STORE_ID=</span><span class="val">your_store_id</span>
+<span class="cmd">SSLC_STORE_PASSWORD=</span><span class="val">your_store_password</span>
+<span class="cmd">SSLC_STORE_CURRENCY=</span><span class="val">BDT</span>
+
+<span class="cm"># Callback routes</span>
+<span class="cmd">SSLC_ROUTE_SUCCESS=</span><span class="val">sslc.success</span>
+<span class="cmd">SSLC_ROUTE_FAILURE=</span><span class="val">sslc.failure</span>
+<span class="cmd">SSLC_ROUTE_CANCEL=</span><span class="val">sslc.cancel</span>
+<span class="cmd">SSLC_ROUTE_IPN=</span><span class="val">sslc.ipn</span></pre>
+				</div>
+			</div>
+		</section>
+
+		<!-- CTA -->
+		<section class="cta-section container">
+			<div class="cta-card reveal">
+				<div class="section-label">Ready</div>
+				<h2>Start accepting payments<br>with confidence.</h2>
+				<p>A focused SSLCommerz integration for Laravel teams shipping in sandbox or live mode. Minimal footprint, maximum clarity.</p>
+				<div class="cta-actions">
+					<a class="btn btn-primary" href="https://github.com/hasinhayder/sslcommerz-laravel" target="_blank" rel="noreferrer">Open Repository</a>
+					<a class="btn btn-ghost" href="docs.html">Full Documentation</a>
+				</div>
+				<div class="cta-tags">
+					<span class="cta-tag">Payment flow</span>
+					<span class="cta-tag">Validation</span>
+					<span class="cta-tag">Refunds</span>
+					<span class="cta-tag">Hash verification</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer class="site-footer container" aria-label="Site footer">
+			<div class="footer-inner">
+				<div>
+					<div class="footer-brand">SSLCommerz Laravel</div>
+					<p class="footer-tagline">A Laravel package for integrating SSLCommerz payments with a clean API.</p>
+				</div>
+				<div class="footer-links">
+					<a href="#features">Features</a>
+					<a href="#install">Install</a>
+					<a href="docs.html">Docs</a>
+					<a href="https://github.com/hasinhayder/sslcommerz-laravel" target="_blank" rel="noreferrer">GitHub</a>
+				</div>
+			</div>
+		</footer>
+	</main>
+
+	<script>
+		// Scroll reveal
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					entry.target.classList.add('visible');
+				}
+			});
+		}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+		document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+	</script>
+</body>
+</html>
